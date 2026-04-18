@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f1726" />
+  <meta name="theme-color" content="#0e1723" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="GaryVee Reader" />
@@ -17,20 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
-
-  <script>
-    (function () {
-      try {
-        var stored = localStorage.getItem('gv_theme');
-        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        var theme = stored || (prefersLight ? 'light' : 'dark');
-        document.documentElement.setAttribute('data-theme', theme);
-      } catch (_e) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-    })();
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -39,9 +26,11 @@
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --safe-left: env(safe-area-inset-left, 0px);
 
-      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-story-title: 'Classic', 'EB Garamond', serif;
-      --font-story-body: 'Literature', 'Inter', sans-serif;
+      --font-ui: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-display: 'Sora', 'Manrope', sans-serif;
+      --font-quote: 'Cormorant Garamond', serif;
+      --font-story-title: 'Inter', 'Classic', sans-serif;
+      --font-story-body: 'Literature', 'Manrope', sans-serif;
 
       --space-1: 8px;
       --space-2: 12px;
@@ -57,37 +46,19 @@
       --shadow-strong: 0 22px 48px rgba(0, 0, 0, 0.28);
       --container: min(1240px, 94vw);
 
-      --bg: #0a1220;
-      --bg-2: #111b2d;
-      --panel: rgba(16, 25, 41, 0.78);
-      --panel-solid: #121f33;
-      --line: rgba(188, 210, 255, 0.22);
-      --text: #f1f6ff;
-      --text-dim: #c9d6ef;
-      --muted: #9ab0d3;
-      --brand: #6dc6ff;
-      --brand-2: #70e8b6;
-      --accent: #ffc67f;
+      --bg: #0e1723;
+      --bg-2: #1b2a3c;
+      --panel: rgba(26, 39, 56, 0.84);
+      --panel-solid: #1f3247;
+      --line: rgba(232, 187, 120, 0.28);
+      --text: #f7efdf;
+      --text-dim: #dfcfb2;
+      --muted: #c8ad82;
+      --brand: #d89a3f;
+      --brand-2: #70aeb9;
+      --accent: #efc47a;
       --ok: #85d89d;
       --error: #ff9f98;
-    }
-
-    html[data-theme="light"] {
-      --bg: #edf3ff;
-      --bg-2: #f6f9ff;
-      --panel: rgba(255, 255, 255, 0.8);
-      --panel-solid: #ffffff;
-      --line: rgba(36, 58, 102, 0.16);
-      --text: #101c30;
-      --text-dim: #2f4266;
-      --muted: #4a608c;
-      --brand: #0f7ad8;
-      --brand-2: #008f63;
-      --accent: #c67800;
-      --ok: #0a874c;
-      --error: #bc2f2f;
-      --shadow-soft: 0 12px 30px rgba(28, 48, 94, 0.12);
-      --shadow-strong: 0 22px 48px rgba(28, 48, 94, 0.18);
     }
 
     * {
@@ -104,8 +75,8 @@
       font-family: var(--font-ui);
       color: var(--text);
       background:
-        radial-gradient(900px 520px at 12% -10%, rgba(109, 198, 255, 0.22), transparent 62%),
-        radial-gradient(700px 460px at 90% 0%, rgba(112, 232, 182, 0.14), transparent 58%),
+        radial-gradient(900px 520px at 12% -10%, rgba(216, 154, 63, 0.24), transparent 62%),
+        radial-gradient(700px 460px at 90% 0%, rgba(112, 174, 185, 0.22), transparent 58%),
         linear-gradient(155deg, var(--bg) 0%, var(--bg-2) 55%, var(--bg) 100%);
       letter-spacing: 0.01em;
     }
@@ -193,21 +164,6 @@
       z-index: 2;
     }
 
-    .theme-toggle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border: 1px solid var(--line);
-      color: var(--text);
-      background: color-mix(in srgb, var(--panel-solid) 88%, transparent);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
-
     .auth-shell {
       width: min(1050px, 95vw);
       margin: calc(var(--safe-top) + var(--space-7)) auto var(--space-7);
@@ -257,8 +213,8 @@
     .reader-head h3,
     .section-title,
     .panel-title {
-      font-family: var(--font-ui);
-      letter-spacing: -0.015em;
+      font-family: var(--font-display);
+      letter-spacing: -0.02em;
     }
 
     .auth-left h1 {
@@ -448,9 +404,10 @@
     }
 
     .brand strong {
-      font-size: 0.95rem;
-      letter-spacing: 0.08em;
+      font-size: 1.16rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
+      color: color-mix(in srgb, var(--accent) 70%, var(--text));
     }
 
     .brand span {
@@ -458,15 +415,44 @@
       font-size: 0.84rem;
     }
 
-    .account-box {
+    .account-wrap {
+      position: relative;
       display: inline-flex;
-      align-items: center;
-      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .account-toggle {
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 6px 10px;
-      background: color-mix(in srgb, var(--panel-solid) 92%, transparent);
-      max-width: min(420px, 62vw);
+      background: color-mix(in srgb, var(--panel-solid) 95%, transparent);
+      color: var(--text);
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .account-icon {
+      font-size: 0.9rem;
+      line-height: 1;
+    }
+
+    .account-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 280px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: color-mix(in srgb, var(--panel-solid) 98%, transparent);
+      box-shadow: var(--shadow-soft);
+      display: grid;
+      gap: 10px;
+      z-index: 30;
     }
 
     .account-meta {
@@ -784,7 +770,7 @@
 
     .quote-box .pt {
       margin: 0;
-      font-family: 'EB Garamond', serif;
+      font-family: var(--font-quote);
       font-size: clamp(1.2rem, 2.4vw, 1.6rem);
       line-height: 1.4;
       color: var(--text);
@@ -1103,13 +1089,6 @@
       padding: 7%;
     }
 
-    html[data-theme="light"] .story-frame {
-      background:
-        radial-gradient(360px 180px at 80% 10%, rgba(15, 122, 216, 0.18), transparent 72%),
-        radial-gradient(360px 190px at 15% 90%, rgba(198, 120, 0, 0.18), transparent 72%),
-        linear-gradient(150deg, #ffffff 0%, #f3f7ff 56%, #eef4ff 100%);
-    }
-
     .story-frame[data-format="feed"] {
       aspect-ratio: 4 / 5;
     }
@@ -1129,33 +1108,33 @@
     .story-footer {
       margin: 0;
       color: #f8fbff;
-    }
-
-    html[data-theme="light"] .story-main,
-    html[data-theme="light"] .story-body,
-    html[data-theme="light"] .story-footer {
-      color: #1a2a44;
+      line-height: calc(1em - 1px);
     }
 
     .story-main {
       font-family: var(--font-story-title);
-      font-size: clamp(1.45rem, 2.4vw, 2.2rem);
+      font-size: clamp(1.45rem, 2.4vw, 2.1rem);
       text-transform: uppercase;
-      line-height: 1.14;
-      letter-spacing: 0.03em;
+      font-weight: 800;
+      letter-spacing: 0.08em;
     }
 
     .story-body,
     .story-footer {
       font-family: var(--font-story-body);
-      font-size: clamp(0.93rem, 1.3vw, 1.15rem);
-      line-height: 1.55;
+      font-size: clamp(0.82rem, 1.2vw, 1.03rem);
       color: color-mix(in srgb, #e5eefc 92%, transparent);
     }
 
-    html[data-theme="light"] .story-body,
-    html[data-theme="light"] .story-footer {
-      color: #324d7a;
+    .story-footer {
+      font-size: clamp(0.41rem, 0.6vw, 0.52rem);
+      color: color-mix(in srgb, #c9d7ed 88%, transparent);
+      letter-spacing: 0.02em;
+    }
+
+    .story-footer-book {
+      margin-top: -8px;
+      opacity: 0.9;
     }
 
     .share-tools {
@@ -1310,8 +1289,14 @@
         align-items: stretch;
       }
 
-      .account-box {
-        max-width: 100%;
+      .account-wrap {
+        width: 100%;
+      }
+
+      .account-menu {
+        left: 0;
+        right: 0;
+        min-width: 0;
       }
 
       .anchor-grid,
@@ -1364,7 +1349,6 @@
       <article class="auth-right">
         <div class="auth-top">
           <span class="panel-title">Acesso à plataforma</span>
-          <button class="theme-toggle" id="btnThemeToggleAuth" type="button" aria-label="Alternar tema">Tema</button>
         </div>
 
         <div class="auth-tabs" role="tablist" aria-label="Modo de autenticação">
@@ -1411,13 +1395,16 @@
     <main id="main-content" class="container is-hidden" aria-labelledby="appTitle">
       <section class="topbar">
         <div class="brand">
-          <strong>Gary Vee Learning Experience</strong>
+          <strong>GARYVEE READER</strong>
           <span>Leitura estratégica com execução diária</span>
         </div>
 
-        <div class="btn-row">
-          <button class="theme-toggle" id="btnThemeToggle" type="button" aria-label="Alternar tema">Tema</button>
-          <div class="account-box" id="accountBox">
+        <div class="account-wrap">
+          <button class="account-toggle" id="btnAccountMenu" type="button" aria-label="Abrir menu da conta" aria-haspopup="menu" aria-controls="accountMenu" aria-expanded="false">
+            <span class="account-icon">☰</span>
+            <span>Conta</span>
+          </button>
+          <div class="account-menu is-hidden" id="accountMenu" role="menu">
             <div class="account-meta">
               <span class="account-name" id="accountName">Usuário</span>
               <span class="account-email" id="accountEmail">email@dominio.com</span>
@@ -1590,13 +1577,14 @@
 
         <div class="share-layout">
           <div class="story-frame" id="storyFrame" data-format="story">
-            <div class="story-inner">
-              <p class="story-main" id="storyMain"></p>
-              <p class="story-body" id="storyBodyA"></p>
-              <p class="story-body" id="storyBodyB"></p>
-              <p class="story-footer" id="storyFooter"></p>
-            </div>
+          <div class="story-inner">
+            <p class="story-main" id="storyMain"></p>
+            <p class="story-body" id="storyBodyA"></p>
+            <p class="story-body" id="storyBodyB"></p>
+            <p class="story-footer" id="storyFooter"></p>
+            <p class="story-footer story-footer-book" id="storyFooterBook"></p>
           </div>
+        </div>
 
           <div class="share-tools">
             <div class="field">

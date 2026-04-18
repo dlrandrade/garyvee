@@ -6,7 +6,7 @@
   }
 
   const STORAGE_KEY = 'gary_vee_game_reader_v5';
-  const THEME_KEY = 'gv_theme';
+  const BOOK_CREDIT = '30 lições que aprendi... por @DanielLuzz';
 
   const badgesConfig = [
     { id: 'start', label: 'Primeiro passo', check: (s) => Object.keys(s.done).length >= 1 },
@@ -60,10 +60,9 @@
 
     accountName: byId('accountName'),
     accountEmail: byId('accountEmail'),
+    btnAccountMenu: byId('btnAccountMenu'),
+    accountMenu: byId('accountMenu'),
     btnSignOut: byId('btnSignOut'),
-
-    btnThemeToggle: byId('btnThemeToggle'),
-    btnThemeToggleAuth: byId('btnThemeToggleAuth'),
 
     chipRow: byId('chipRow'),
     chapterList: byId('chapterList'),
@@ -134,6 +133,7 @@
     storyBodyA: byId('storyBodyA'),
     storyBodyB: byId('storyBodyB'),
     storyFooter: byId('storyFooter'),
+    storyFooterBook: byId('storyFooterBook'),
     postCanvas: byId('postCanvas'),
     progressCanvas: byId('progressCanvas'),
 
@@ -329,31 +329,25 @@
       document.body.setAttribute('data-auth', 'in');
     } else {
       document.body.setAttribute('data-auth', 'out');
+      closeAccountMenu();
     }
   }
 
-  function setTheme(theme) {
-    const next = theme === 'light' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem(THEME_KEY, next);
+  function closeAccountMenu() {
+    if (!el.accountMenu || !el.btnAccountMenu) return;
+    el.accountMenu.classList.add('is-hidden');
+    el.btnAccountMenu.setAttribute('aria-expanded', 'false');
+  }
 
-    const themeColor = next === 'light' ? '#edf3ff' : '#0f1726';
-    const themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeMeta) {
-      themeMeta.setAttribute('content', themeColor);
+  function toggleAccountMenu() {
+    if (!el.accountMenu || !el.btnAccountMenu) return;
+    const nextIsHidden = !el.accountMenu.classList.contains('is-hidden');
+    if (nextIsHidden) {
+      closeAccountMenu();
+      return;
     }
-  }
-
-  function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme') || 'dark';
-    setTheme(current === 'dark' ? 'light' : 'dark');
-  }
-
-  function setupThemeButtons() {
-    [el.btnThemeToggle, el.btnThemeToggleAuth].forEach(function (btn) {
-      if (!btn) return;
-      btn.addEventListener('click', toggleTheme);
-    });
+    el.accountMenu.classList.remove('is-hidden');
+    el.btnAccountMenu.setAttribute('aria-expanded', 'true');
   }
 
   async function getRuntimeConfig() {
@@ -807,6 +801,7 @@
     el.storyBodyA.textContent = String(el.shareBodyInput.value || '').trim();
     el.storyBodyB.textContent = String(el.shareBodyInputB.value || '').trim();
     el.storyFooter.textContent = String(el.shareTagInput.value || '').trim();
+    el.storyFooterBook.textContent = BOOK_CREDIT;
   }
 
   function wrapText(ctx, text, maxWidth) {
@@ -845,7 +840,8 @@
       '',
       String(el.shareBodyInputB.value || '').trim(),
       '',
-      String(el.shareTagInput.value || '').trim()
+      String(el.shareTagInput.value || '').trim(),
+      BOOK_CREDIT
     ].join('\n');
   }
 
@@ -890,36 +886,40 @@
     const blockW = Math.round(width * (format === 'feed' ? 0.74 : 0.72));
     const x = Math.round((width - blockW) / 2);
 
-    const topMargin = format === 'feed' ? 180 : 250;
-    const gapMainBody = format === 'feed' ? 58 : 80;
-    const gapBodyFooter = format === 'feed' ? 48 : 70;
+    const titleSize = format === 'feed' ? 62 : 66;
+    const bodySize = format === 'feed' ? 44 : 48;
+    const sourceSize = Math.round(bodySize / 2);
+    const creditSize = Math.max(16, sourceSize - 2);
+
+    const topMargin = format === 'feed' ? 174 : 236;
+    const gapMainBody = format === 'feed' ? 44 : 58;
+    const gapBodyFooter = format === 'feed' ? 36 : 46;
 
     let y = topMargin;
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = format === 'feed'
-      ? '400 64px "Classic", "EB Garamond", serif'
-      : '400 68px "Classic", "EB Garamond", serif';
-    y = drawParagraph(ctx, String(el.shareMainInput.value || '').toUpperCase(), x, y, blockW, format === 'feed' ? 74 : 82);
+    ctx.font = '800 ' + titleSize + 'px "Inter", sans-serif';
+    y = drawParagraph(ctx, String(el.shareMainInput.value || '').toUpperCase(), x, y, blockW, titleSize - 1);
 
     y += gapMainBody;
 
     ctx.fillStyle = '#e9f0fb';
-    ctx.font = format === 'feed'
-      ? '500 46px "Literature", "Inter", sans-serif'
-      : '500 50px "Literature", "Inter", sans-serif';
-    y = drawParagraph(ctx, String(el.shareBodyInput.value || ''), x, y, blockW, format === 'feed' ? 58 : 62);
+    ctx.font = '500 ' + bodySize + 'px "Literature", "Manrope", sans-serif';
+    y = drawParagraph(ctx, String(el.shareBodyInput.value || ''), x, y, blockW, bodySize - 1);
 
-    y += 34;
-    y = drawParagraph(ctx, String(el.shareBodyInputB.value || ''), x, y, blockW, format === 'feed' ? 58 : 62);
+    y += (format === 'feed' ? 26 : 32);
+    y = drawParagraph(ctx, String(el.shareBodyInputB.value || ''), x, y, blockW, bodySize - 1);
 
     y += gapBodyFooter;
 
-    ctx.fillStyle = '#c3d3eb';
-    ctx.font = format === 'feed'
-      ? '500 32px "Literature", "Inter", sans-serif'
-      : '500 38px "Literature", "Inter", sans-serif';
-    drawParagraph(ctx, String(el.shareTagInput.value || ''), x, y, blockW, format === 'feed' ? 40 : 46);
+    ctx.fillStyle = '#bfd0ea';
+    ctx.font = '500 ' + sourceSize + 'px "Literature", "Manrope", sans-serif';
+    y = drawParagraph(ctx, String(el.shareTagInput.value || ''), x, y, blockW, sourceSize - 1);
+
+    y += 8;
+    ctx.fillStyle = 'rgba(191,208,234,0.88)';
+    ctx.font = '500 ' + creditSize + 'px "Literature", "Manrope", sans-serif';
+    drawParagraph(ctx, BOOK_CREDIT, x, y, blockW, creditSize - 1);
 
     const link = document.createElement('a');
     link.download = 'gary-vee-capitulo-' + chapterId + '-' + variant + '-' + format + '.png';
@@ -935,7 +935,7 @@
       headline: String(el.shareMainInput.value || '').trim(),
       body_a: String(el.shareBodyInput.value || '').trim(),
       body_b: String(el.shareBodyInputB.value || '').trim(),
-      footer: String(el.shareTagInput.value || '').trim(),
+      footer: String(el.shareTagInput.value || '').trim() + ' | ' + BOOK_CREDIT,
       caption: postCaption()
     }).catch(function (error) {
       console.error(error);
@@ -1285,6 +1285,21 @@
   function setupReadingEvents() {
     el.search.addEventListener('input', renderChapterList);
 
+    if (el.btnAccountMenu && el.accountMenu) {
+      el.btnAccountMenu.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        toggleAccountMenu();
+      });
+
+      el.accountMenu.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+      });
+
+      document.addEventListener('click', function () {
+        closeAccountMenu();
+      });
+    }
+
     const goPrev = function () {
       const chapter = getChapterById(selectedChapterId);
       const prev = APP_DATA.chapters.find(function (c) {
@@ -1362,6 +1377,7 @@
       if (key === 'n') goNext();
       if (key === 'p') goPrev();
       if (key === 'd') completeChapter(selectedChapterId);
+      if (key === 'escape') closeAccountMenu();
     });
 
     bindBookMotion();
@@ -1477,7 +1493,6 @@
   }
 
   async function init() {
-    setupThemeButtons();
     registerServiceWorker();
     setupAuthEvents();
     setAuthTab('login');

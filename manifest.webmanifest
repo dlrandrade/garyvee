@@ -4,8 +4,8 @@
   "description": "Leitura gameficada com 30 capitulos, progresso diario e share studio.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f1726",
-  "theme_color": "#0f1726",
+  "background_color": "#0e1723",
+  "theme_color": "#0e1723",
   "lang": "pt-BR",
   "icons": [
     {
