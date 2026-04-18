@@ -26,12 +26,42 @@
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --safe-left: env(safe-area-inset-left, 0px);
 
-      --font-ui: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-display: 'Outfit', 'Inter', sans-serif;
-      --font-quote: 'EB Garamond', serif;
-      --font-story-title: 'Outfit', 'Inter', sans-serif;
-      --font-story-body: 'EB Garamond', serif;
+      /* DigitalHub design system — typography */
+      --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-serif: 'EB Garamond', serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+      --font-ui: var(--font-sans);
+      --font-display: var(--font-sans);
+      --font-quote: var(--font-serif);
+      --font-story-title: var(--font-sans);
+      --font-story-body: var(--font-serif);
 
+      /* DigitalHub design system — surfaces & text (dark theme) */
+      --rmm-bg: #020617;
+      --rmm-surface: #0f172a;
+      --rmm-surface-2: #1e293b;
+      --rmm-surface-3: #334155;
+      --rmm-border: #1e293b;
+      --rmm-text: #f8fafc;
+      --rmm-muted: #94a3b8;
+      --rmm-yellow: #eab502;
+      --rmm-yellow-intense: #c29300;
+      --rmm-orange: var(--rmm-yellow);
+      --rmm-orange-intense: var(--rmm-yellow-intense);
+
+      /* DigitalHub design system — radii (Tailwind scale) */
+      --radius-md: 0.375rem;
+      --radius-lg: 0.5rem;
+      --radius-xl: 0.75rem;
+      --radius-2xl: 1rem;
+
+      /* DigitalHub design system — shadows (Tailwind scale) */
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+      /* Legacy semantic aliases (mapped onto the rmm tokens above) */
       --space-1: 8px;
       --space-2: 12px;
       --space-3: 16px;
@@ -39,24 +69,24 @@
       --space-5: 30px;
       --space-6: 42px;
       --space-7: 56px;
-      --radius-sm: 12px;
-      --radius-md: 18px;
-      --radius-lg: 28px;
-      --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.18);
-      --shadow-strong: 0 22px 48px rgba(0, 0, 0, 0.28);
+      --radius-sm: var(--radius-lg);
+      --radius-md: var(--radius-xl);
+      --radius-lg: var(--radius-2xl);
+      --shadow-soft: var(--shadow-lg);
+      --shadow-strong: var(--shadow-xl);
       --container: min(1240px, 94vw);
 
-      --bg: #020617;
-      --bg-2: #0f172a;
-      --panel: rgba(15, 23, 42, 0.78);
-      --panel-solid: #0f172a;
-      --line: rgba(148, 163, 184, 0.24);
-      --text: #f8fafc;
+      --bg: var(--rmm-bg);
+      --bg-2: var(--rmm-surface);
+      --panel: color-mix(in srgb, var(--rmm-surface) 78%, transparent);
+      --panel-solid: var(--rmm-surface);
+      --line: var(--rmm-border);
+      --text: var(--rmm-text);
       --text-dim: #e2e8f0;
-      --muted: #94a3b8;
-      --brand: #f97316;
-      --brand-2: #ea580c;
-      --accent: #f97316;
+      --muted: var(--rmm-muted);
+      --brand: var(--rmm-yellow);
+      --brand-2: var(--rmm-yellow-intense);
+      --accent: var(--rmm-yellow);
       --ok: #22c55e;
       --error: #ef4444;
     }
@@ -75,7 +105,7 @@
       font-family: var(--font-ui);
       color: var(--text);
       background:
-        radial-gradient(900px 520px at 12% -10%, rgba(249, 115, 22, 0.26), transparent 62%),
+        radial-gradient(900px 520px at 12% -10%, rgba(234, 181, 2, 0.26), transparent 62%),
         radial-gradient(700px 460px at 90% 0%, rgba(30, 41, 59, 0.5), transparent 58%),
         linear-gradient(155deg, var(--bg) 0%, var(--bg-2) 55%, var(--bg) 100%);
       letter-spacing: 0.01em;
@@ -184,7 +214,7 @@
       align-content: space-between;
       gap: var(--space-5);
       background:
-        radial-gradient(500px 300px at 20% 0%, rgba(249, 115, 22, 0.2), transparent 70%),
+        radial-gradient(500px 300px at 20% 0%, rgba(234, 181, 2, 0.2), transparent 70%),
         linear-gradient(160deg, color-mix(in srgb, var(--panel-solid) 95%, transparent) 0%, color-mix(in srgb, var(--panel-solid) 86%, transparent) 100%);
     }
 
@@ -1088,7 +1118,7 @@
       border-radius: 24px;
       border: 1px solid var(--line);
       background:
-        radial-gradient(360px 180px at 80% 10%, rgba(249, 115, 22, 0.24), transparent 72%),
+        radial-gradient(360px 180px at 80% 10%, rgba(234, 181, 2, 0.24), transparent 72%),
         radial-gradient(360px 190px at 15% 90%, rgba(30, 41, 59, 0.42), transparent 72%),
         linear-gradient(150deg, #020617 0%, color-mix(in srgb, #020617 72%, #0f172a) 56%, #020617 100%);
       box-shadow: var(--shadow-soft);
