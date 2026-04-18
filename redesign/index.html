@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>Redesign · GaryVee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./tokens.css" />
+  <style>
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: calc(var(--safe-top) + 56px) 28px 120px;
+      display: grid;
+      gap: 56px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 22px;
+      max-width: 760px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.04em;
+      line-height: 0.9;
+      margin: 0;
+      font-size: clamp(2.6rem, 8vw, 5.4rem);
+      text-wrap: balance;
+    }
+
+    .hero h1 .accent { color: var(--rmm-yellow); }
+
+    .hero p {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      line-height: 1.55;
+      color: var(--rmm-text-dim);
+      max-width: 62ch;
+    }
+
+    .meta-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .meta-strip .tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--rmm-border-strong);
+      color: var(--rmm-muted);
+    }
+
+    .meta-strip .tag.yellow {
+      color: #000;
+      background: var(--rmm-yellow);
+      border-color: var(--rmm-yellow);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .section-head h2 {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+    }
+
+    .section-head h2 .accent { color: var(--rmm-yellow); }
+
+    .section-head p {
+      margin: 0;
+      color: var(--rmm-muted);
+      font-size: 0.95rem;
+      max-width: 46ch;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+    }
+
+    .preview {
+      display: grid;
+      gap: 14px;
+      color: inherit;
+      transition: transform 200ms var(--ease-out);
+    }
+
+    .preview:hover { transform: translateY(-4px); }
+
+    .frame {
+      position: relative;
+      aspect-ratio: 9 / 16;
+      background: var(--rmm-surface);
+      border: 1px solid var(--rmm-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at top, rgba(249, 193, 2, 0.08), transparent 60%);
+      pointer-events: none;
+    }
+
+    .frame iframe {
+      width: 390px;
+      height: calc(390px * 16 / 9);
+      border: 0;
+      transform-origin: top left;
+      transform: scale(0.72);
+      pointer-events: none;
+    }
+
+    .preview .caption {
+      display: grid;
+      gap: 4px;
+    }
+
+    .preview .caption .eyebrow { font-size: 0.66rem; }
+
+    .preview .caption strong {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      font-size: 1.1rem;
+      line-height: 1.1;
+    }
+
+    .preview .caption p {
+      margin: 0;
+      color: var(--rmm-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .preview .caption a {
+      justify-self: start;
+      margin-top: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--rmm-yellow);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* system notes */
+    .notes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .note {
+      padding: 22px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--rmm-border);
+      background: var(--rmm-surface);
+    }
+
+    .note h3 {
+      margin: 0 0 8px;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      font-size: 0.95rem;
+    }
+
+    .note h3 .num {
+      color: var(--rmm-yellow);
+      margin-right: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .note p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: var(--rmm-text-dim);
+    }
+
+    .note code {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--rmm-yellow);
+      background: rgba(249, 193, 2, 0.08);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    footer.rd-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 24px;
+      border-top: 1px solid var(--rmm-border);
+      font-size: 0.78rem;
+      color: var(--rmm-subtle);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    footer.rd-foot a { color: var(--rmm-yellow); }
+
+    @media (max-width: 520px) {
+      .frame iframe { transform: scale(0.54); }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <span class="eyebrow">Proposta de UX · system design</span>
+      <h1>Do painel ao <span class="accent">ritual.</span></h1>
+      <p>
+        A versão atual oferece tudo na mesma tela — nav, leitor, flashcards, badges, share.
+        A proposta abaixo inverte o modelo: <strong>uma decisão por superfície</strong>, hash-routing,
+        mobile-first, com o streak como âncora e o capítulo do dia como única CTA.
+      </p>
+      <div class="meta-strip">
+        <span class="tag yellow">Mobile-first</span>
+        <span class="tag">Hash router</span>
+        <span class="tag">View Transitions</span>
+        <span class="tag">PWA offline</span>
+        <span class="tag">A11y AAA</span>
+        <span class="tag">Atalhos J/K/F/?</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>3 superfícies <span class="accent">prototipadas.</span></h2>
+        <p>
+          Cada card abre a tela real — todas usam os tokens `#000 / #404040 / #f9c102`
+          e a tipografia Outfit 900 + EB Garamond já aprovada.
+        </p>
+      </div>
+      <div class="preview-grid">
+        <a class="preview" href="./today.html">
+          <div class="frame">
+            <iframe title="Today preview" src="./today.html" loading="lazy" scrolling="no"></iframe>
+          </div>
+          <div class="caption">
+            <span class="eyebrow">Arrival</span>
+            <strong>Today</strong>
+            <p>Streak ring, dia N de 30, quote do Gary, CTA única. 10 segundos para decidir.</p>
+            <a href="./today.html">Abrir tela →</a>
+          </div>
+        </a>
+
+        <a class="preview" href="./reader.html">
+          <div class="frame">
+            <iframe title="Reader preview" src="./reader.html" loading="lazy" scrolling="no"></iframe>
+          </div>
+          <div class="caption">
+            <span class="eyebrow">Foco</span>
+            <strong>Reader</strong>
+            <p>Full-bleed, Garamond 20/1.7, max 62ch, capitular em amarelo, TTS, Aa sheet, atalhos J/K.</p>
+            <a href="./reader.html">Abrir tela →</a>
+          </div>
+        </a>
+
+        <a class="preview" href="./practice.html">
+          <div class="frame">
+            <iframe title="Practice preview" src="./practice.html" loading="lazy" scrolling="no"></iframe>
+          </div>
+          <div class="caption">
+            <span class="eyebrow">Memória</span>
+            <strong>Practice</strong>
+            <p>Deck de flashcards swipeável, tap para virar, rating 1–4, affordances visuais pra direita/esquerda.</p>
+            <a href="./practice.html">Abrir tela →</a>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Decisões <span class="accent">de sistema.</span></h2>
+        <p>Principais escolhas por trás do redesign — o que muda por debaixo, não só na pele.</p>
+      </div>
+      <div class="notes">
+        <div class="note">
+          <h3><span class="num">01</span>Ritual, não biblioteca</h3>
+          <p>Cada superfície tem um único job-to-be-done. Today arruma, Reader foca, Practice fixa. O app deixa de ser um painel e vira um arco de 5 minutos.</p>
+        </div>
+        <div class="note">
+          <h3><span class="num">02</span>Roteamento por hash</h3>
+          <p>No produto final, <code>#/today</code>, <code>#/read/:n</code>, <code>#/practice/:n</code> etc. Troca de view com View Transitions API, zero JS framework.</p>
+        </div>
+        <div class="note">
+          <h3><span class="num">03</span>Tipografia dupla</h3>
+          <p>Outfit 900 UPPERCASE só para hero, chapter title e CTAs. Corpo de leitura em EB Garamond 20px/1.7 — preserva o tom editorial do DigitalHub sem cansar no long-form.</p>
+        </div>
+        <div class="note">
+          <h3><span class="num">04</span>Amarelo como semáforo</h3>
+          <p>#F9C102 deixa de ser decoração e vira sinal: "próxima ação", "posição atual", "ênfase semântica". Nunca aplicado a bloco inteiro — sempre a um token.</p>
+        </div>
+        <div class="note">
+          <h3><span class="num">05</span>Números como identidade</h3>
+          <p>DIA 07, 3/8 cards, 62% — numerais tabulares, pesos 900, letter-spacing negativo. O usuário lê o estado antes do texto.</p>
+        </div>
+        <div class="note">
+          <h3><span class="num">06</span>Offline-first</h3>
+          <p>Service worker já existe; estende para pré-cache dos 30 capítulos em JSON leve + fontes. Supabase fica só pra sync de progresso/reviews/journal.</p>
+        </div>
+        <div class="note">
+          <h3><span class="num">07</span>Spaced repetition real</h3>
+          <p>Practice usa SM-2 simplificado (quatro ratings → next-review date). Dispensa o mapa de entidades da tela principal — vira um insight secundário dentro do próprio card.</p>
+        </div>
+        <div class="note">
+          <h3><span class="num">08</span>Acessibilidade AAA</h3>
+          <p>Prefers-reduced-motion respeitado, foco visível em teclado, contraste texto/fundo ≥ 7:1, amarelo como <em>sinal</em>, nunca como texto longo. Atalhos J/K/F/?.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Próximo <span class="accent">passo.</span></h2>
+      </div>
+      <p style="margin: 0; color: var(--rmm-text-dim); line-height: 1.65; font-size: 1.02rem; max-width: 64ch;">
+        Se você validar a linguagem, o caminho é substituir o layout de 3 colunas do <code style="font-family: var(--font-mono); color: var(--rmm-yellow); background: rgba(249,193,2,0.08); padding: 2px 6px; border-radius: 4px;">index.html</code> por um shell roteado que carrega cada superfície sob demanda, reaproveitando o que já existe de Supabase, service worker, share canvas e dados dos 30 capítulos. Nada é jogado fora — o que existe vira peça de um fluxo mais enxuto.
+      </p>
+    </section>
+
+    <footer class="rd-foot">
+      <span>GaryVee · Redesign proposal</span>
+      <a href="../index.html">← app atual</a>
+    </footer>
+  </main>
+</body>
+</html>

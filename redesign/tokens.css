@@ -1,0 +1,277 @@
+/*
+ * Redesign tokens — inherited from the DigitalHub design system already
+ * applied in index.html, restated here so each prototype file in this
+ * folder is self-contained and can be opened directly.
+ */
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'EB Garamond', Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --rmm-bg: #000000;
+  --rmm-surface: #0a0a0a;
+  --rmm-surface-2: #141414;
+  --rmm-surface-3: #1f1f1f;
+  --rmm-border: #262626;
+  --rmm-border-strong: #404040;
+  --rmm-text: #f8fafc;
+  --rmm-text-dim: #d4d4d4;
+  --rmm-muted: #a3a3a3;
+  --rmm-subtle: #737373;
+  --rmm-yellow: #f9c102;
+  --rmm-yellow-dim: #d1a302;
+  --rmm-ok: #22c55e;
+  --rmm-warn: #f59e0b;
+  --rmm-error: #ef4444;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 20px -6px rgba(0, 0, 0, 0.55), 0 4px 8px -4px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 48px -12px rgba(0, 0, 0, 0.7);
+  --glow-yellow: 0 0 48px rgba(249, 193, 2, 0.25);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--rmm-bg);
+  color: var(--rmm-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--rmm-yellow);
+  color: #000;
+}
+
+/* ---------- typography primitives ---------- */
+
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rmm-yellow);
+}
+
+.eyebrow.mute {
+  color: var(--rmm-subtle);
+}
+
+.headline {
+  font-family: var(--font-sans);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  text-wrap: balance;
+  margin: 0;
+}
+
+.headline .accent {
+  color: var(--rmm-yellow);
+}
+
+.headline .mute {
+  color: color-mix(in srgb, var(--rmm-muted) 80%, transparent);
+}
+
+.number-display {
+  font-family: var(--font-sans);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  line-height: 0.85;
+}
+
+.serif {
+  font-family: var(--font-serif);
+  font-weight: 500;
+}
+
+/* ---------- button primitives ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 14px 22px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rmm-border-strong);
+  color: var(--rmm-text);
+  background: transparent;
+  transition: transform 160ms var(--ease-out), background 160ms var(--ease-out),
+    border-color 160ms var(--ease-out), color 160ms var(--ease-out);
+}
+
+.btn:hover {
+  border-color: var(--rmm-text);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--rmm-yellow);
+  border-color: var(--rmm-yellow);
+  color: #000;
+  box-shadow: var(--glow-yellow);
+}
+
+.btn-primary:hover {
+  background: #ffd02a;
+  border-color: #ffd02a;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  padding-inline: 10px;
+}
+
+.btn-ghost:hover {
+  color: var(--rmm-yellow);
+  border-color: transparent;
+}
+
+/* ---------- page shell / bottom nav ---------- */
+
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: calc(72px + var(--safe-bottom));
+  position: relative;
+  overflow-x: hidden;
+}
+
+.page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(720px 420px at 12% -5%, rgba(249, 193, 2, 0.12), transparent 62%),
+    radial-gradient(560px 360px at 92% 8%, rgba(64, 64, 64, 0.35), transparent 60%);
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--safe-bottom) + 14px);
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: rgba(10, 10, 10, 0.85);
+  border: 1px solid var(--rmm-border);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-md);
+}
+
+.bottom-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  color: var(--rmm-muted);
+  transition: background 160ms var(--ease-out), color 160ms var(--ease-out);
+}
+
+.bottom-nav a:hover {
+  color: var(--rmm-text);
+}
+
+.bottom-nav a.active {
+  background: var(--rmm-yellow);
+  color: #000;
+}
+
+.bottom-nav svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.8;
+}
+
+/* ---------- prototype header ---------- */
+
+.proto-label {
+  position: fixed;
+  top: calc(var(--safe-top) + 14px);
+  left: 14px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(10, 10, 10, 0.85);
+  border: 1px solid var(--rmm-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rmm-muted);
+}
+
+.proto-label .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rmm-yellow);
+  box-shadow: 0 0 8px var(--rmm-yellow);
+}

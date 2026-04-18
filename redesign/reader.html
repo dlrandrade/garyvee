@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>Reader · GaryVee Redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./tokens.css" />
+  <style>
+    body {
+      background: var(--rmm-bg);
+    }
+
+    .reader-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: calc(var(--safe-top) + 14px) 22px 14px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.65) 80%, transparent);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .reader-topbar .back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--rmm-border);
+      color: var(--rmm-text);
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--rmm-surface-3);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      display: block;
+      height: 100%;
+      width: 32%;
+      background: var(--rmm-yellow);
+      box-shadow: 0 0 8px rgba(249, 193, 2, 0.6);
+      transition: width 200ms var(--ease-out);
+    }
+
+    .progress-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rmm-subtle);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .reader-topbar .actions {
+      display: inline-flex;
+      gap: 6px;
+    }
+
+    .reader-topbar .actions button {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--rmm-border);
+      color: var(--rmm-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reader-topbar .actions button:hover {
+      color: var(--rmm-text);
+    }
+
+    /* article */
+    article.reader {
+      position: relative;
+      z-index: 1;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 28px 22px 160px;
+    }
+
+    .chapter-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--rmm-subtle);
+      font-weight: 700;
+    }
+
+    .chapter-meta .num {
+      color: var(--rmm-yellow);
+    }
+
+    .chapter-title {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.035em;
+      line-height: 0.92;
+      margin: 0 0 36px;
+      font-size: clamp(2.2rem, 8.5vw, 4rem);
+      text-wrap: balance;
+    }
+
+    .chapter-title .accent {
+      color: var(--rmm-yellow);
+    }
+
+    .quote-open {
+      position: relative;
+      margin: 0 0 40px;
+      padding: 28px 26px 28px 34px;
+      border-radius: var(--radius-md);
+      background: var(--rmm-surface);
+      border: 1px solid var(--rmm-border);
+    }
+
+    .quote-open::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 16px;
+      bottom: 16px;
+      width: 3px;
+      background: var(--rmm-yellow);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .quote-open .pt {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: 1.45rem;
+      line-height: 1.4;
+      color: var(--rmm-text);
+      text-wrap: balance;
+    }
+
+    .quote-open .en {
+      margin: 10px 0 0;
+      font-size: 0.88rem;
+      color: var(--rmm-subtle);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    /* body */
+    .body-copy {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      line-height: 1.7;
+      color: var(--rmm-text-dim);
+    }
+
+    .body-copy p {
+      margin: 0 0 24px;
+    }
+
+    .body-copy p:first-child::first-letter {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: 3.8rem;
+      float: left;
+      line-height: 0.85;
+      margin: 6px 12px 0 0;
+      color: var(--rmm-yellow);
+      letter-spacing: -0.04em;
+    }
+
+    .body-copy em.pull {
+      display: block;
+      font-family: var(--font-sans);
+      font-style: normal;
+      font-weight: 800;
+      font-size: 1.5rem;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      text-transform: none;
+      color: var(--rmm-text);
+      border-left: 3px solid var(--rmm-yellow);
+      padding: 4px 0 4px 18px;
+      margin: 28px 0;
+    }
+
+    /* anchor card */
+    .anchor-card {
+      margin: 40px 0 0;
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--rmm-border);
+      background: linear-gradient(180deg, rgba(249, 193, 2, 0.04), transparent 60%), var(--rmm-surface);
+      display: grid;
+      gap: 12px;
+    }
+
+    .anchor-card .eyebrow {
+      font-size: 0.66rem;
+    }
+
+    .anchor-card h3 {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      font-size: 1.4rem;
+    }
+
+    .anchor-card ol {
+      margin: 6px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      counter-reset: action;
+    }
+
+    .anchor-card li {
+      counter-increment: action;
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 12px;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: var(--rmm-text-dim);
+    }
+
+    .anchor-card li::before {
+      content: counter(action, decimal-leading-zero);
+      font-weight: 900;
+      font-size: 0.85rem;
+      color: var(--rmm-yellow);
+      letter-spacing: 0.08em;
+      padding-top: 2px;
+    }
+
+    /* sticky footer CTA */
+    .reader-footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 45;
+      padding: 14px 16px calc(var(--safe-bottom) + 14px);
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.75) 70%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .reader-footer .chapter-dots {
+      display: inline-flex;
+      gap: 4px;
+      flex: 1;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0 6px;
+    }
+
+    .reader-footer .chapter-dots i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--rmm-surface-3);
+      flex-shrink: 0;
+    }
+
+    .reader-footer .chapter-dots i.done { background: var(--rmm-yellow-dim); }
+    .reader-footer .chapter-dots i.current {
+      background: var(--rmm-yellow);
+      width: 18px;
+      border-radius: 3px;
+    }
+
+    .reader-footer .nav-arrow {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--rmm-border);
+      color: var(--rmm-text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--rmm-surface);
+    }
+
+    .reader-footer .nav-arrow[disabled] {
+      color: var(--rmm-subtle);
+      background: transparent;
+    }
+
+    .reader-footer .next-btn {
+      flex: 0 0 auto;
+      padding: 14px 22px;
+      font-size: 0.76rem;
+    }
+
+    /* read controls sheet */
+    .aa-sheet {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 78px;
+      z-index: 46;
+      display: none;
+      gap: 4px;
+      padding: 8px;
+      background: rgba(10, 10, 10, 0.92);
+      border: 1px solid var(--rmm-border);
+      border-radius: var(--radius-pill);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .aa-sheet.open { display: inline-flex; }
+
+    .aa-sheet button {
+      padding: 8px 14px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--rmm-muted);
+      border-radius: var(--radius-pill);
+    }
+
+    .aa-sheet button.active {
+      background: var(--rmm-yellow);
+      color: #000;
+    }
+
+    @media (min-width: 720px) {
+      .body-copy { font-size: 1.28rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .progress-fill, .ring .progress { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="proto-label"><span class="dot"></span> Redesign · Reader</div>
+
+  <header class="reader-topbar">
+    <a class="back" href="./today.html" aria-label="Voltar">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </a>
+    <div class="progress-track" aria-label="Progresso do capítulo">
+      <span class="progress-fill" id="progressFill"></span>
+    </div>
+    <span class="progress-label" id="progressLabel">32%</span>
+    <div class="actions">
+      <button aria-label="Ajustes de leitura" id="aaBtn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M6 12h12M9 17h6"/></svg>
+      </button>
+      <button aria-label="Ouvir" id="ttsBtn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="aa-sheet" id="aaSheet" role="group" aria-label="Tamanho do texto">
+    <button data-size="0.95">Aa</button>
+    <button data-size="1.1" class="active">Aa</button>
+    <button data-size="1.28" style="font-size: 0.86rem;">Aa</button>
+    <button data-size="1.45" style="font-size: 0.95rem;">Aa</button>
+  </div>
+
+  <article class="reader" id="reader">
+    <div class="chapter-meta">
+      <span class="num">Cap. 07</span>
+      <span>·</span>
+      <span>Negócios</span>
+      <span>·</span>
+      <span>3 min</span>
+    </div>
+
+    <h1 class="chapter-title">
+      Toda interação
+      <span class="accent">conta.</span>
+    </h1>
+
+    <figure class="quote-open">
+      <p class="pt">"Cada interação importa. Cada relacionamento tem valor."</p>
+      <p class="en">"Every interaction matters. Every relationship has value."</p>
+    </figure>
+
+    <div class="body-copy">
+      <p>Na economia da atenção, onde produtos se imitam em dias e preços colapsam em semanas, <strong>o que não se copia é a forma como você faz o outro se sentir</strong>. Cada DM respondida, cada e-mail que carrega o nome certo, cada reunião em que você escuta antes de falar — tudo isso é infraestrutura invisível de confiança.</p>
+
+      <p>Gary Vee insiste num ponto incômodo: você está sempre comunicando, mesmo quando acha que não está. O silêncio diante do cliente frustrado é uma resposta. O tom da sua última mensagem no grupo é uma assinatura. O jeito como sua equipe encerra um atendimento é um traço de marca. Não existe "relação sem importância" em um mundo conectado — existe apenas relação que você cuidou, ou relação que você deixou esfriar.</p>
+
+      <em class="pull">Em mercados saturados, o diferencial real é como sua marca faz as pessoas se sentirem.</em>
+
+      <p>A prática é mais simples do que parece: trate <em>cada</em> contato como se ele pudesse se tornar o maior cliente, o maior parceiro ou o maior detrator da sua história. Na maioria das vezes, não vai. Em raras vezes, vai. E a assimetria dessa aposta é o que constrói carreiras de longo prazo.</p>
+
+      <p>A escolha, portanto, não é entre eficiência e gentileza — é entre consistência e oportunismo. Você pode fechar a venda de hoje ou fechar os próximos dez anos. Os dois caminhos exigem exatamente o mesmo tempo. O segundo é só mais paciente.</p>
+    </div>
+
+    <aside class="anchor-card">
+      <span class="eyebrow">Ferramenta do capítulo</span>
+      <h3>Ciclo de Interação com Valor</h3>
+      <ol>
+        <li>Identifique a última pessoa com quem você interagiu de forma protocolar.</li>
+        <li>Volte com uma mensagem personalizada — nome, contexto e um passo útil.</li>
+        <li>Anote o nome num log diário. Revise a lista toda sexta-feira.</li>
+      </ol>
+    </aside>
+  </article>
+
+  <footer class="reader-footer">
+    <button class="nav-arrow" aria-label="Capítulo anterior">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="chapter-dots" aria-hidden="true">
+      <i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="current"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <a class="btn btn-primary next-btn" href="./practice.html">
+      Praticar
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </footer>
+
+  <script>
+    // Live progress indicator tied to scroll position.
+    (function () {
+      var reader = document.getElementById('reader');
+      var fill = document.getElementById('progressFill');
+      var label = document.getElementById('progressLabel');
+
+      function update() {
+        var rect = reader.getBoundingClientRect();
+        var total = Math.max(1, reader.scrollHeight - window.innerHeight * 0.85);
+        var scrolled = Math.min(total, Math.max(0, -rect.top + 80));
+        var pct = Math.round((scrolled / total) * 100);
+        pct = Math.min(100, Math.max(2, pct));
+        fill.style.width = pct + '%';
+        label.textContent = pct + '%';
+      }
+
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
+    })();
+
+    // Text size control sheet.
+    (function () {
+      var btn = document.getElementById('aaBtn');
+      var sheet = document.getElementById('aaSheet');
+      var body = document.querySelector('.body-copy');
+
+      btn.addEventListener('click', function () {
+        sheet.classList.toggle('open');
+      });
+
+      sheet.addEventListener('click', function (e) {
+        var target = e.target.closest('button[data-size]');
+        if (!target) return;
+        sheet.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
+        target.classList.add('active');
+        body.style.fontSize = target.dataset.size + 'rem';
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!sheet.contains(e.target) && !btn.contains(e.target)) sheet.classList.remove('open');
+      });
+    })();
+
+    // Minimal text-to-speech hook.
+    (function () {
+      var btn = document.getElementById('ttsBtn');
+      var speaking = false;
+      btn.addEventListener('click', function () {
+        if (!('speechSynthesis' in window)) return;
+        if (speaking) {
+          speechSynthesis.cancel();
+          speaking = false;
+          btn.style.color = '';
+          return;
+        }
+        var text = document.querySelector('.body-copy').innerText;
+        var u = new SpeechSynthesisUtterance(text);
+        u.lang = 'pt-BR';
+        u.rate = 1;
+        u.onend = function () { speaking = false; btn.style.color = ''; };
+        speechSynthesis.speak(u);
+        speaking = true;
+        btn.style.color = 'var(--rmm-yellow)';
+      });
+    })();
+
+    // Keyboard shortcuts: J/K for prev/next, F for focus.
+    document.addEventListener('keydown', function (e) {
+      if (e.target.matches('input, textarea')) return;
+      if (e.key === 'j' || e.key === 'ArrowRight') window.location.href = './practice.html';
+      if (e.key === 'k' || e.key === 'ArrowLeft') window.history.back();
+    });
+  </script>
+</body>
+</html>
