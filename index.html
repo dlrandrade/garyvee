@@ -17,7 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -37,15 +37,15 @@
       --font-story-body: var(--font-serif);
 
       /* DigitalHub design system — surfaces & text (dark theme) */
-      --rmm-bg: #020617;
-      --rmm-surface: #0f172a;
-      --rmm-surface-2: #1e293b;
-      --rmm-surface-3: #334155;
-      --rmm-border: #1e293b;
+      --rmm-bg: #000000;
+      --rmm-surface: #0a0a0a;
+      --rmm-surface-2: #1a1a1a;
+      --rmm-surface-3: #404040;
+      --rmm-border: #404040;
       --rmm-text: #f8fafc;
-      --rmm-muted: #94a3b8;
-      --rmm-yellow: #eab502;
-      --rmm-yellow-intense: #c29300;
+      --rmm-muted: #a3a3a3;
+      --rmm-yellow: #f9c102;
+      --rmm-yellow-intense: #d1a302;
       --rmm-orange: var(--rmm-yellow);
       --rmm-orange-intense: var(--rmm-yellow-intense);
 
@@ -105,8 +105,8 @@
       font-family: var(--font-ui);
       color: var(--text);
       background:
-        radial-gradient(900px 520px at 12% -10%, rgba(234, 181, 2, 0.26), transparent 62%),
-        radial-gradient(700px 460px at 90% 0%, rgba(30, 41, 59, 0.5), transparent 58%),
+        radial-gradient(900px 520px at 12% -10%, rgba(249, 193, 2, 0.22), transparent 62%),
+        radial-gradient(700px 460px at 90% 0%, rgba(64, 64, 64, 0.45), transparent 58%),
         linear-gradient(155deg, var(--bg) 0%, var(--bg-2) 55%, var(--bg) 100%);
       letter-spacing: 0.01em;
     }
@@ -214,7 +214,7 @@
       align-content: space-between;
       gap: var(--space-5);
       background:
-        radial-gradient(500px 300px at 20% 0%, rgba(234, 181, 2, 0.2), transparent 70%),
+        radial-gradient(500px 300px at 20% 0%, rgba(249, 193, 2, 0.18), transparent 70%),
         linear-gradient(160deg, color-mix(in srgb, var(--panel-solid) 95%, transparent) 0%, color-mix(in srgb, var(--panel-solid) 86%, transparent) 100%);
     }
 
@@ -247,10 +247,33 @@
       letter-spacing: -0.02em;
     }
 
+    /* DigitalHub headline pattern: UPPERCASE, extrabold, tight tracking,
+       with an accent span that repaints the second half in yellow. */
+    .auth-left h1,
+    .hero-card h2 {
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      text-wrap: balance;
+    }
+
+    .auth-left h1 .accent,
+    .hero-card h2 .accent,
+    .headline .accent {
+      color: var(--brand);
+    }
+
+    .auth-left h1 .mute,
+    .hero-card h2 .mute,
+    .headline .mute {
+      color: color-mix(in srgb, var(--muted) 85%, transparent);
+    }
+
     .auth-left h1 {
       margin: 0;
-      font-size: clamp(1.95rem, 4vw, 3rem);
-      line-height: 1.05;
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      line-height: 0.95;
       text-wrap: balance;
     }
 
@@ -544,8 +567,8 @@
 
     .hero-card h2 {
       margin: 0;
-      font-size: clamp(1.62rem, 2.6vw, 2.35rem);
-      line-height: 1.1;
+      font-size: clamp(1.9rem, 4vw, 3.4rem);
+      line-height: 0.95;
       text-wrap: balance;
     }
 
@@ -1118,7 +1141,7 @@
       border-radius: 24px;
       border: 1px solid var(--line);
       background:
-        radial-gradient(360px 180px at 80% 10%, rgba(234, 181, 2, 0.24), transparent 72%),
+        radial-gradient(360px 180px at 80% 10%, rgba(249, 193, 2, 0.22), transparent 72%),
         radial-gradient(360px 190px at 15% 90%, rgba(30, 41, 59, 0.42), transparent 72%),
         linear-gradient(150deg, #020617 0%, color-mix(in srgb, #020617 72%, #0f172a) 56%, #020617 100%);
       box-shadow: var(--shadow-soft);
@@ -1373,7 +1396,7 @@
       <article class="auth-left">
         <div class="auth-headline">
           <span class="eyebrow">Gary Vee Study OS</span>
-          <h1 id="authTitle">Aprenda 1 capítulo por dia e conclua em 30 dias</h1>
+          <h1 id="authTitle">Aprenda 1 capítulo por dia <span class="accent">e conclua em 30 dias.</span></h1>
           <p>Faça login para sincronizar progresso, manter streak, desbloquear badges e criar posts prontos para Story e Feed com base no capítulo e na ferramenta do dia.</p>
         </div>
 
@@ -1457,7 +1480,7 @@
       <section class="hero">
         <article class="hero-card">
           <span class="eyebrow">Plano diário</span>
-          <h2 id="appTitle">Leitura gameficada para fechar 30 capítulos em 30 dias</h2>
+          <h2 id="appTitle">Leitura gameficada para fechar <span class="accent">30 capítulos em 30 dias.</span></h2>
           <p>Capítulo do dia, frases âncora, framework exclusivo por capítulo, revisão ativa com flashcards e estúdio de compartilhamento para story/feed.</p>
           <div class="hero-actions">
             <button class="btn btn-primary" id="btnChapterToday" type="button">Ir para capítulo do dia</button>
