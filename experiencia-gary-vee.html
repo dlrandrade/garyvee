@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="pt-BR" style="color-scheme: dark;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1218" />
+  <title>Gary Vee Learning Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Archivo+Black&family=Newsreader:opsz,wght@6..72,400;6..72,600&family=IBM+Plex+Mono:wght@400;600&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --safe-top: env(safe-area-inset-top);
+      --safe-right: env(safe-area-inset-right);
+      --safe-bottom: env(safe-area-inset-bottom);
+      --safe-left: env(safe-area-inset-left);
+      --ink: #f4f3ef;
+      --ink-dim: #c8c4bb;
+      --bg: #0f1218;
+      --panel: rgba(22, 26, 33, 0.82);
+      --line: rgba(242, 232, 210, 0.18);
+      --brand: #f3b24d;
+      --brand-2: #7cd3ff;
+      --accent: #8cd17d;
+      --danger: #ff8a7a;
+      --shadow: 0 22px 45px rgba(0, 0, 0, .42);
+      --radius: 22px;
+      --space-1: 8px;
+      --space-2: 12px;
+      --space-3: 18px;
+      --space-4: 28px;
+      --space-5: 42px;
+      --space-6: 64px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: "Newsreader", Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 85% -10%, rgba(124,211,255,.12), rgba(0,0,0,0)),
+        radial-gradient(900px 600px at -5% 15%, rgba(243,178,77,.12), rgba(0,0,0,0)),
+        linear-gradient(135deg, #0b0d10 0%, #11151c 42%, #0f1115 100%);
+      overflow-x: hidden;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(243, 178, 77, 0.24);
+    }
+
+    .grain::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: .22;
+      mix-blend-mode: soft-light;
+      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.045) 1px, transparent 0);
+      background-size: 3px 3px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 12px;
+      background: #fff;
+      color: #000;
+      padding: 8px 10px;
+      border-radius: 8px;
+      z-index: 2000;
+      text-decoration: none;
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .skip-link:focus-visible { top: 12px; }
+
+    .top-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 4px;
+      z-index: 1300;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      box-shadow: 0 0 18px rgba(124,211,255,.7);
+      transition: width .2s ease;
+    }
+
+    .toast-area {
+      position: fixed;
+      top: calc(var(--safe-top) + 18px);
+      right: calc(var(--safe-right) + 18px);
+      z-index: 1400;
+      display: grid;
+      gap: 8px;
+      width: min(340px, 88vw);
+    }
+
+    .toast {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(18, 24, 32, 0.95);
+      padding: 10px 12px;
+      font-size: .9rem;
+      box-shadow: var(--shadow);
+    }
+
+    .toast.error { border-color: rgba(255,138,122,.55); color: #ffd1c8; }
+    .toast.success { border-color: rgba(140,209,125,.55); color: #daf3d3; }
+
+    .auth-shell {
+      width: min(980px, 94vw);
+      margin: calc(var(--safe-top) + var(--space-6)) auto var(--space-6);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      overflow: hidden;
+    }
+
+    .auth-intro {
+      padding: var(--space-6) var(--space-5);
+      border-right: 1px solid var(--line);
+      display: grid;
+      align-content: center;
+      gap: var(--space-3);
+      background:
+        radial-gradient(circle at 20% 12%, rgba(124,211,255,.2), transparent 40%),
+        linear-gradient(150deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      width: fit-content;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: #ffddad;
+      border: 1px solid rgba(255, 207, 134, .35);
+      border-radius: 999px;
+      padding: 6px 11px;
+      background: rgba(243,178,77,.12);
+    }
+
+    .auth-intro h1 {
+      margin: 0;
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(2rem, 3vw, 3rem);
+      line-height: 1.08;
+      max-width: 13ch;
+      text-wrap: balance;
+    }
+
+    .auth-intro p {
+      margin: 0;
+      color: var(--ink-dim);
+      max-width: 42ch;
+      line-height: 1.65;
+    }
+
+    .auth-card {
+      padding: var(--space-5);
+      display: grid;
+      gap: var(--space-3);
+      align-content: center;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 6px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .tab-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink-dim);
+      border-radius: 10px;
+      padding: 10px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      color: #111;
+      background: linear-gradient(135deg, #e5a23c, #dc7e45);
+      border-color: rgba(255,222,173,.3);
+      font-weight: 600;
+    }
+
+    .auth-form {
+      display: grid;
+      gap: var(--space-2);
+      margin-top: 2px;
+    }
+
+    .field { display: grid; gap: 6px; }
+
+    label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #ddd3bf;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      padding: 12px 12px;
+      background: rgba(255,255,255,.03);
+      color: var(--ink);
+    }
+
+    textarea { min-height: 96px; resize: vertical; }
+
+    input::placeholder,
+    textarea::placeholder { color: #9b9488; }
+
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-weight: 600;
+      font-size: .92rem;
+      cursor: pointer;
+      color: white;
+      background: rgba(255,255,255,.05);
+      transition-property: transform, border-color, background, box-shadow;
+      transition-duration: .22s;
+      transition-timing-function: ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #e5a23c, #dc7e45);
+      color: #111;
+      border-color: rgba(255,222,173,.3);
+      font-family: "IBM Plex Mono", monospace;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      font-size: .8rem;
+      box-shadow: 0 8px 20px rgba(229,162,60,.22);
+    }
+
+    .btn-secondary {
+      border-color: rgba(255,255,255,.2);
+      background: rgba(255,255,255,.07);
+    }
+
+    .btn-inline-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .hint {
+      color: #bcb6a8;
+      font-size: .9rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: min(1460px, 94vw);
+      margin: calc(var(--safe-top) + 18px) auto calc(var(--safe-bottom) + var(--space-5));
+      padding-bottom: calc(var(--safe-bottom) + 10px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: var(--space-4);
+      align-items: stretch;
+    }
+
+    .hero-card,
+    .challenge-card,
+    .nav-card,
+    .reader-card,
+    .side-card,
+    .share-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      backdrop-filter: blur(9px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: var(--space-5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(243,178,77,.3), rgba(243,178,77,0));
+      pointer-events: none;
+    }
+
+    .hero-card h2 {
+      margin: var(--space-2) 0;
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(2rem, 4vw, 3.7rem);
+      line-height: 1.05;
+      letter-spacing: .01em;
+      max-width: 17ch;
+      text-wrap: balance;
+    }
+
+    .hero-card p {
+      margin: 0;
+      color: var(--ink-dim);
+      max-width: 64ch;
+      font-size: 1.07rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      margin-top: var(--space-3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .challenge-card {
+      padding: var(--space-3);
+      display: grid;
+      gap: var(--space-3);
+      grid-template-rows: auto 1fr;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 12px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .stat .label {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #afaa9f;
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .stat .value {
+      font-size: 1.36rem;
+      margin-top: 3px;
+      font-weight: 700;
+      color: #fff1d7;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .book-stage {
+      position: relative;
+      min-height: 280px;
+      display: grid;
+      place-items: center;
+      perspective: 1200px;
+    }
+
+    .book-ambient {
+      position: absolute;
+      width: 250px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(124,211,255,.17), rgba(124,211,255,0) 70%);
+      filter: blur(6px);
+      transform: translateY(45px);
+      pointer-events: none;
+    }
+
+    .book {
+      position: relative;
+      width: 220px;
+      height: 306px;
+      transform-style: preserve-3d;
+      transform: rotateY(-25deg) rotateX(7deg);
+      transition-property: transform;
+      transition-duration: .2s;
+      transition-timing-function: ease;
+      transform-origin: center;
+    }
+
+    .book::after {
+      content: "";
+      position: absolute;
+      inset: auto -10px -26px 12px;
+      height: 34px;
+      background: rgba(0,0,0,.55);
+      filter: blur(12px);
+      transform: rotateX(90deg);
+      transform-origin: bottom;
+      border-radius: 50%;
+    }
+
+    .book-front,
+    .book-spine,
+    .book-pages {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.2);
+    }
+
+    .book-front {
+      transform: translateZ(18px);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: 0 12px 25px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.2);
+    }
+
+    .book-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      width: 220px;
+      height: 306px;
+    }
+
+    .book-spine {
+      width: 30px;
+      transform: rotateY(90deg) translateZ(15px) translateX(-14px);
+      background: linear-gradient(180deg, #cab082, #9b6f40 70%, #734f2a);
+      border-radius: 4px;
+      box-shadow: inset -2px 0 5px rgba(0,0,0,.35);
+    }
+
+    .book-pages {
+      background: linear-gradient(90deg, #f3ebde, #d9cfbf);
+      transform: translateZ(4px) translateX(4px);
+      border-radius: 8px;
+      inset: 6px -4px 6px 6px;
+      box-shadow: inset -3px 0 0 rgba(0,0,0,.1);
+    }
+
+    .layout {
+      margin-top: var(--space-4);
+      display: grid;
+      grid-template-columns: 290px minmax(560px, 1fr) 340px;
+      gap: var(--space-3);
+      align-items: start;
+    }
+
+    .nav-card {
+      padding: var(--space-3);
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-family: "IBM Plex Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: .77rem;
+      color: #d6c9ae;
+    }
+
+    .search {
+      margin-top: 10px;
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .chip-row {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.24);
+      background: rgba(255,255,255,.03);
+      color: #d6d0c1;
+      font-size: .72rem;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      border-color: rgba(124,211,255,.7);
+      color: #ddf3ff;
+      background: rgba(124,211,255,.14);
+    }
+
+    .chapter-list {
+      list-style: none;
+      margin: 14px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .chapter-link {
+      display: block;
+      border: 1px solid var(--line);
+      padding: 11px 10px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--ink);
+      background: rgba(255,255,255,.02);
+      transition-property: transform, border-color, background;
+      transition-duration: .2s;
+      transition-timing-function: ease;
+    }
+
+    .chapter-link:hover { border-color: rgba(243,178,77,.5); transform: translateX(2px); }
+    .chapter-link.active { border-color: rgba(243,178,77,.8); background: rgba(243,178,77,.13); }
+
+    .link-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .7rem;
+      color: #f5d9a9;
+      margin-bottom: 5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .link-title {
+      font-size: .95rem;
+      line-height: 1.25;
+      text-wrap: balance;
+    }
+
+    .tag-done {
+      color: #b6f3c3;
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+
+    .reader-card {
+      padding: var(--space-4);
+      min-width: 0;
+    }
+
+    .reader-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .title-block h3 {
+      margin: 5px 0 0;
+      font-family: "DM Serif Display", serif;
+      font-size: clamp(1.8rem, 2.9vw, 2.7rem);
+      line-height: 1.06;
+      max-width: 19ch;
+      text-wrap: balance;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+      min-width: 0;
+    }
+
+    .meta-pill {
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: .7rem;
+      border: 1px solid var(--line);
+      color: #e9decc;
+      background: rgba(255,255,255,.03);
+      font-family: "IBM Plex Mono", monospace;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .quote-box {
+      margin-top: var(--space-3);
+      border-left: 3px solid var(--brand);
+      padding: 6px 0 6px 12px;
+    }
+
+    .quote-box .pt {
+      font-size: 1.31rem;
+      font-family: "DM Serif Display", serif;
+      margin: 0;
+      line-height: 1.25;
+      color: #ffe6bb;
+      text-wrap: pretty;
+    }
+
+    .quote-box .en {
+      margin: 8px 0 0;
+      font-size: .93rem;
+      color: #a6c8dd;
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .lesson {
+      margin-top: var(--space-3);
+      font-size: 1.13rem;
+      color: #f1eee8;
+      line-height: 1.74;
+    }
+
+    .anchor-grid {
+      margin-top: var(--space-3);
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .anchor-card,
+    .framework-card,
+    .source-card,
+    .flash-card,
+    .challenge-pill,
+    .entity-card,
+    .related-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .anchor-card {
+      padding: 14px;
+      background: linear-gradient(140deg, rgba(243,178,77,.13), rgba(243,178,77,.01));
+    }
+
+    .anchor-card h4,
+    .framework-card h4,
+    .source-card h4,
+    .section-title {
+      margin: 0;
+      font-family: "IBM Plex Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: .72rem;
+      color: #dfd4bc;
+    }
+
+    .anchor-text {
+      margin-top: 8px;
+      font-size: 1.06rem;
+      color: #fff2d2;
+      line-height: 1.45;
+      text-wrap: pretty;
+    }
+
+    .framework-card { padding: 14px; }
+    .toolkit-name { margin: 9px 0 5px; font-size: 1.08rem; font-weight: 600; }
+
+    .toolkit-formula {
+      display: inline-block;
+      margin: 4px 0 8px;
+      color: #8fdfff;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .86rem;
+      border: 1px solid rgba(124,211,255,.35);
+      border-radius: 9px;
+      padding: 5px 7px;
+      background: rgba(124,211,255,.09);
+      white-space: nowrap;
+    }
+
+    .toolkit-list {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .toolkit-list li { margin: 6px 0; }
+
+    .actions {
+      margin-top: var(--space-3);
+      display: grid;
+      gap: 9px;
+    }
+
+    .action-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      background: rgba(255,255,255,.03);
+      min-width: 0;
+    }
+
+    .action-item .idx {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(124,211,255,.12);
+      border: 1px solid rgba(124,211,255,.32);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .73rem;
+      color: #d4f1ff;
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .reflection {
+      margin-top: var(--space-3);
+      padding: 14px;
+      border-left: 4px solid var(--accent);
+      background: rgba(140,209,125,.09);
+      border-radius: 10px;
+    }
+
+    .reflection p { margin: 0; text-wrap: pretty; }
+
+    .source-card {
+      margin-top: 12px;
+      padding: 12px;
+      font-size: .84rem;
+      color: #bfb8a8;
+    }
+
+    .source-card .src { margin-top: 6px; opacity: .95; }
+
+    .related-box {
+      margin-top: 12px;
+      padding: 12px;
+    }
+
+    .entity-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 8px;
+    }
+
+    .entity-card {
+      padding: 8px;
+      text-decoration: none;
+      color: #ece6d8;
+      display: grid;
+      gap: 4px;
+    }
+
+    .entity-card small {
+      color: #93cbe7;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .reader-footer {
+      margin-top: var(--space-3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .side-col {
+      display: grid;
+      gap: 12px;
+      position: sticky;
+      top: 18px;
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .side-card { padding: 14px; }
+
+    .xp {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 1.7rem;
+      color: #ffe0b0;
+      margin-top: 6px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bar {
+      height: 10px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      margin-top: 8px;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #f3b24d, #7cd3ff);
+      transition: width .35s ease;
+    }
+
+    .challenge-grid {
+      margin-top: 8px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .challenge-pill {
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .84rem;
+    }
+
+    .badge-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 7px;
+      font-size: .72rem;
+      opacity: .42;
+      text-align: center;
+      background: rgba(255,255,255,.03);
+    }
+
+    .badge.unlocked {
+      opacity: 1;
+      border-color: rgba(243,178,77,.6);
+      background: rgba(243,178,77,.12);
+      color: #ffebcb;
+    }
+
+    .cards-zone {
+      margin-top: var(--space-3);
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .flash-card {
+      min-height: 170px;
+      padding: 12px;
+      position: relative;
+      cursor: pointer;
+      perspective: 800px;
+      touch-action: manipulation;
+    }
+
+    .flash-inner {
+      position: relative;
+      width: 100%;
+      min-height: 146px;
+      transform-style: preserve-3d;
+      transition-property: transform;
+      transition-duration: .45s;
+      transition-timing-function: ease;
+    }
+
+    .flash-card.flipped .flash-inner { transform: rotateY(180deg); }
+
+    .flash-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      align-content: space-between;
+      background: rgba(255,255,255,.03);
+    }
+
+    .flash-back {
+      transform: rotateY(180deg);
+      background: rgba(124,211,255,.1);
+      border-color: rgba(124,211,255,.35);
+    }
+
+    .flash-label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #dad1bf;
+    }
+
+    .flash-text {
+      font-size: .95rem;
+      line-height: 1.35;
+      text-wrap: pretty;
+    }
+
+    .share-card {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+    }
+
+    .share-layout {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .story-frame {
+      width: 100%;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: #0e1116;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+      min-height: 520px;
+    }
+
+    .story-frame[data-format="story"] { aspect-ratio: 9 / 16; }
+    .story-frame[data-format="feed"] { aspect-ratio: 4 / 5; }
+
+    .story-frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 90% 12%, rgba(124,211,255,.16), transparent 34%),
+        radial-gradient(circle at 10% 80%, rgba(243,178,77,.14), transparent 40%);
+      pointer-events: none;
+    }
+
+    .story-inner {
+      width: 72%;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 20px;
+    }
+
+    .story-main {
+      margin: 0;
+      font-family: "Classic", "Archivo Black", sans-serif;
+      font-size: clamp(18px, 1.95vw, 30px);
+      line-height: 1.15;
+      color: #ffffff;
+      text-wrap: pretty;
+    }
+
+    .story-body,
+    .story-footer {
+      margin: 0;
+      font-family: "Literature", "Cormorant Garamond", serif;
+      font-size: clamp(18px, 1.45vw, 26px);
+      line-height: 1.18;
+      color: #f4f1eb;
+      text-wrap: pretty;
+    }
+
+    .story-footer {
+      font-size: clamp(14px, 1.05vw, 19px);
+      color: #cfc8bb;
+      opacity: .9;
+    }
+
+    .share-tools {
+      display: grid;
+      gap: 11px;
+      align-content: start;
+    }
+
+    .mini-note {
+      color: #bfb8a9;
+      font-size: .82rem;
+      margin-top: 6px;
+    }
+
+    .insight {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px;
+      background: rgba(255,255,255,.02);
+      white-space: pre-line;
+      color: #d8d0bf;
+      font-size: .92rem;
+      max-height: 170px;
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+
+    .kbd {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: .7rem;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 7px;
+      padding: 2px 5px;
+      background: rgba(255,255,255,.08);
+      color: #fff;
+    }
+
+    .is-hidden { display: none !important; }
+
+    .mobile-actions {
+      display: none;
+      position: fixed;
+      left: calc(var(--safe-left) + 12px);
+      right: calc(var(--safe-right) + 12px);
+      bottom: calc(var(--safe-bottom) + 12px);
+      z-index: 1250;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(10, 14, 20, 0.95);
+      padding: 8px;
+      backdrop-filter: blur(10px);
+      overscroll-behavior: contain;
+    }
+
+    .mobile-actions .btn {
+      padding: 10px 8px;
+      font-size: .78rem;
+    }
+
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+      white-space: nowrap;
+    }
+
+    *:focus-visible {
+      outline: 2px solid rgba(124,211,255,.88);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 1180px) {
+      .layout {
+        grid-template-columns: 250px 1fr;
+        gap: 14px;
+      }
+
+      .side-col {
+        grid-column: 1 / -1;
+        position: static;
+        max-height: unset;
+        overflow: visible;
+      }
+
+      .cards-zone { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 960px) {
+      .auth-shell {
+        grid-template-columns: 1fr;
+        margin-top: calc(var(--safe-top) + var(--space-4));
+      }
+
+      .auth-intro {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        padding: var(--space-4);
+      }
+
+      .auth-card { padding: var(--space-4); }
+      .hero { grid-template-columns: 1fr; }
+      .share-layout { grid-template-columns: 1fr; }
+      .story-frame { max-width: 420px; margin: 0 auto; }
+      .container { margin-top: calc(var(--safe-top) + 12px); }
+    }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .nav-card { position: static; max-height: unset; }
+      .anchor-grid { grid-template-columns: 1fr; }
+      .cards-zone { grid-template-columns: 1fr; }
+      .reader-card { padding: var(--space-3); }
+      .share-card { padding: var(--space-3); }
+      .mobile-actions { display: grid; }
+      .btn-desktop-nav { display: none !important; }
+      body { padding-bottom: calc(var(--safe-bottom) + 90px); }
+    }
+
+    @media (max-width: 520px) {
+      .hero-card,
+      .challenge-card,
+      .nav-card,
+      .reader-card,
+      .side-card,
+      .share-card {
+        border-radius: 16px;
+      }
+
+      .hero-card,
+      .challenge-card,
+      .reader-card,
+      .nav-card,
+      .side-card,
+      .share-card {
+        padding: var(--space-3);
+      }
+
+      .hero-card h2 { font-size: clamp(1.65rem, 8vw, 2.35rem); }
+      .title-block h3 { font-size: clamp(1.45rem, 7vw, 2rem); }
+      .story-inner { width: 76%; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="grain">
+  <a href="#main-content" class="skip-link">Ir para o conteúdo principal</a>
+
+  <div id="toastArea" class="toast-area" aria-live="polite"></div>
+  <div class="top-progress" id="topProgress"></div>
+
+  <section id="authShell" class="auth-shell" aria-labelledby="authTitle">
+    <article class="auth-intro">
+      <span class="eyebrow">Acesso seguro</span>
+      <h1 id="authTitle">Seu Studio de leitura estratégica</h1>
+      <p>Entre com seu e-mail para continuar sua trilha gamificada, sincronizar progresso no Supabase e criar posts de capítulo em Story e Feed.</p>
+      <p class="hint">Acesso rápido preenchido: <strong translate="no">dlrandrade@gmail.com</strong> | senha <strong translate="no">190221</strong>.</p>
+    </article>
+
+    <article class="auth-card">
+      <div class="auth-tabs" role="tablist" aria-label="Modo de autenticação">
+        <button id="tabLogin" class="tab-btn active" type="button" role="tab" aria-selected="true" aria-controls="loginPane">Login</button>
+        <button id="tabSignup" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="signupPane">Cadastro</button>
+      </div>
+
+      <div id="loginPane" role="tabpanel">
+        <form id="loginForm" class="auth-form" novalidate>
+          <div class="field">
+            <label for="loginEmail">E-mail</label>
+            <input id="loginEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="seu@email.com…" spellcheck="false" required />
+          </div>
+          <div class="field">
+            <label for="loginPassword">Senha</label>
+            <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Digite sua senha…" spellcheck="false" required />
+          </div>
+          <div class="btn-inline-row">
+            <button class="btn btn-primary" id="btnSubmitLogin" type="submit">Entrar</button>
+            <button class="btn btn-secondary" id="btnQuickFill" type="button">Preencher acesso rápido</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="signupPane" role="tabpanel" class="is-hidden">
+        <form id="signupForm" class="auth-form" novalidate>
+          <div class="field">
+            <label for="signupEmail">E-mail</label>
+            <input id="signupEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="novo@email.com…" spellcheck="false" required />
+          </div>
+          <div class="field">
+            <label for="signupPassword">Senha</label>
+            <input id="signupPassword" name="password" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres…" spellcheck="false" required minlength="6" />
+          </div>
+          <div class="btn-inline-row">
+            <button class="btn btn-primary" id="btnSubmitSignup" type="submit">Criar conta</button>
+          </div>
+        </form>
+      </div>
+      <p class="hint">Cadastro com confirmação de e-mail desabilitada no projeto.</p>
+    </article>
+  </section>
+
+  <main id="main-content" class="container is-hidden" aria-labelledby="appTitle">
+    <section class="hero">
+      <article class="hero-card">
+        <span class="eyebrow">Gary Vee Study OS</span>
+        <h2 id="appTitle">Leitura gameficada para fechar 30 capítulos em 30 dias</h2>
+        <p>Experiência conectada às análises do projeto (<strong>conceitos</strong>, <strong>entidades</strong> e <strong>fontes</strong>) com foco em aprendizagem ativa: capítulo do dia, XP, streak, cards de fixação e ferramenta prática exclusiva por capítulo.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="btnChapterToday" type="button">Ir para capítulo do dia</button>
+          <button class="btn btn-secondary" id="btnMarkDone" type="button">Marcar capítulo como concluído</button>
+          <button class="btn btn-secondary" id="btnFocus" type="button">Modo foco</button>
+          <button class="btn btn-secondary" id="btnSignOut" type="button">Sair</button>
+        </div>
+      </article>
+
+      <aside class="challenge-card">
+        <div class="stats-grid">
+          <div class="stat"><div class="label">Capítulos</div><div class="value" id="statChapters">30</div></div>
+          <div class="stat"><div class="label">Concluídos</div><div class="value" id="statDone">0</div></div>
+          <div class="stat"><div class="label">Streak</div><div class="value" id="statStreak">0</div></div>
+        </div>
+
+        <div class="book-stage" id="bookStage">
+          <div class="book-ambient"></div>
+          <div class="book" id="bookMockup">
+            <div class="book-pages"></div>
+            <div class="book-spine"></div>
+            <div class="book-front">
+              <img src="capa-gary-vee.jpg" alt="Capa do livro 30 lições com Gary Vee" width="220" height="306" fetchpriority="high" />
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="layout" id="layoutMain">
+      <nav class="nav-card" aria-label="Capítulos">
+        <h2 class="panel-title">Navegação de capítulos</h2>
+        <label for="searchChapter" class="visually-hidden">Buscar capítulo</label>
+        <input type="search" id="searchChapter" class="search" name="chapterSearch" autocomplete="off" placeholder="Buscar por título, frase ou tema…" />
+        <div class="chip-row" id="chipRow"></div>
+        <ul class="chapter-list" id="chapterList"></ul>
+      </nav>
+
+      <article class="reader-card">
+        <header class="reader-head">
+          <div class="title-block">
+            <p class="panel-title" id="chapterBadge">Capítulo 01</p>
+            <h3 id="chapterTitle"></h3>
+            <div class="meta-row">
+              <span class="meta-pill" id="chapterTheme"></span>
+              <span class="meta-pill" id="chapterType"></span>
+              <span class="meta-pill" id="chapterLayer"></span>
+            </div>
+          </div>
+          <div class="meta-row btn-desktop-nav">
+            <button class="btn btn-secondary" id="btnPrev" type="button">Anterior</button>
+            <button class="btn btn-secondary" id="btnNext" type="button">Próximo</button>
+          </div>
+        </header>
+
+        <section class="quote-box">
+          <p class="pt" id="quotePt"></p>
+          <p class="en" id="quoteEn"></p>
+        </section>
+
+        <p class="lesson" id="chapterLesson"></p>
+
+        <section class="anchor-grid">
+          <article class="anchor-card">
+            <h4>Frase âncora</h4>
+            <p class="anchor-text" id="anchorText"></p>
+          </article>
+
+          <article class="framework-card">
+            <h4>Tool do capítulo</h4>
+            <p class="toolkit-name" id="toolName"></p>
+            <span class="toolkit-formula" id="toolFormula"></span>
+            <ol class="toolkit-list" id="toolList"></ol>
+          </article>
+        </section>
+
+        <section class="actions" id="actionsList"></section>
+
+        <section class="reflection">
+          <h4 class="section-title">Pergunta de reflexão</h4>
+          <p id="reflectionText"></p>
+        </section>
+
+        <section class="related-box">
+          <h4 class="section-title">Mapa de entidades relacionadas</h4>
+          <div class="entity-grid" id="entityGrid"></div>
+        </section>
+
+        <section class="source-card">
+          <h4>Fonte discreta (Gary Vee)</h4>
+          <div class="src" id="sourceText"></div>
+        </section>
+
+        <footer class="reader-footer">
+          <div class="meta-row">
+            <span class="meta-pill">Citação rastreável: <span id="citeRange"></span></span>
+          </div>
+          <div class="meta-row">
+            <button class="btn btn-primary" id="btnDoneBottom" type="button">Concluir capítulo + XP</button>
+            <button class="btn btn-secondary" id="btnOpenShare" type="button">Compartilhar capítulo do dia</button>
+          </div>
+        </footer>
+
+        <section style="margin-top:14px;">
+          <h4 class="section-title">Cards de fixação</h4>
+          <div class="cards-zone" id="flashcards"></div>
+          <p class="mini-note">Dica: clique no card para virar. Ao fixar os 3 cards do capítulo, você ganha bônus de XP.</p>
+        </section>
+      </article>
+
+      <aside class="side-col">
+        <section class="side-card">
+          <h4 class="panel-title">Painel de progresso</h4>
+          <div class="xp" id="xpValue">0 XP</div>
+          <div class="bar"><span id="xpBar"></span></div>
+          <div class="challenge-grid" style="margin-top:10px;">
+            <div class="challenge-pill"><span>Meta mensal</span><strong id="goalMonth"></strong></div>
+            <div class="challenge-pill"><span>Meta diária</span><strong>1 capítulo</strong></div>
+            <div class="challenge-pill"><span>Capítulo do dia</span><strong id="chapterTodayPill"></strong></div>
+            <div class="challenge-pill"><span>Status da trilha</span><strong id="trailStatus"></strong></div>
+          </div>
+        </section>
+
+        <section class="side-card">
+          <h4 class="panel-title">Badges</h4>
+          <div class="badge-grid" id="badgeGrid"></div>
+        </section>
+
+        <section class="side-card">
+          <h4 class="panel-title">Sinal cross-book</h4>
+          <div class="insight" id="crossInsight"></div>
+        </section>
+
+        <section class="side-card">
+          <h4 class="panel-title">Atalhos</h4>
+          <p class="mini-note"><span class="kbd">N</span> próximo capítulo · <span class="kbd">P</span> capítulo anterior · <span class="kbd">D</span> concluir capítulo</p>
+          <p class="mini-note">Entidades indexadas: <strong id="entityCount"></strong></p>
+        </section>
+      </aside>
+    </section>
+
+    <section class="share-card" id="shareStudio" style="margin-top:18px;">
+      <h3 style="margin:0;font-family:'DM Serif Display',serif;font-size:1.8rem;">Share Studio do capítulo</h3>
+      <p class="mini-note" style="margin-top:2px;">Formato inspirado na referência da pasta <code>/img</code>, com margens amplas, bloco centralizado e tipografia do tipo Classic/Literature.</p>
+
+      <div class="share-layout">
+        <div class="story-frame" id="storyFrame" data-format="story">
+          <div class="story-inner">
+            <p class="story-main" id="storyMain"></p>
+            <p class="story-body" id="storyBodyA"></p>
+            <p class="story-body" id="storyBodyB"></p>
+            <p class="story-footer" id="storyFooter"></p>
+          </div>
+        </div>
+
+        <div class="share-tools">
+          <div class="field">
+            <label for="shareChapterSelect">Capítulo</label>
+            <select id="shareChapterSelect" name="shareChapter" autocomplete="off"></select>
+          </div>
+
+          <div class="field">
+            <label for="shareFormatSelect">Formato</label>
+            <select id="shareFormatSelect" name="shareFormat" autocomplete="off">
+              <option value="story">Story (1080x1920)</option>
+              <option value="feed">Feed (1080x1350)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="shareVariantSelect">Tipo de post</label>
+            <select id="shareVariantSelect" name="shareVariant" autocomplete="off">
+              <option value="insight">Post de insight do capítulo</option>
+              <option value="tool">Post da ferramenta única</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="shareMainInput">Parágrafo 1 (Classic)</label>
+            <textarea id="shareMainInput" name="shareMain" autocomplete="off" placeholder="Headline principal…"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="shareBodyInput">Parágrafo 2 (Literature)</label>
+            <textarea id="shareBodyInput" name="shareBodyA" autocomplete="off" placeholder="Argumento de apoio…"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="shareBodyInputB">Parágrafo 3 (Literature)</label>
+            <textarea id="shareBodyInputB" name="shareBodyB" autocomplete="off" placeholder="Fechamento ou call to action…"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="shareTagInput">Rodapé discreto</label>
+            <input id="shareTagInput" name="shareTag" type="text" autocomplete="off" placeholder="Fonte do capítulo…" />
+          </div>
+
+          <div class="meta-row">
+            <button class="btn btn-primary" id="btnDownloadPost" type="button">Baixar PNG</button>
+            <button class="btn btn-secondary" id="btnCopyCaption" type="button">Copiar texto</button>
+            <button class="btn btn-secondary" id="btnDailyShare" type="button">Auto: capítulo do dia</button>
+          </div>
+        </div>
+      </div>
+      <canvas id="postCanvas" width="1080" height="1920" class="is-hidden"></canvas>
+    </section>
+  </main>
+
+  <div class="mobile-actions" aria-label="Ações rápidas mobile">
+    <button class="btn btn-secondary" id="btnPrevMobile" type="button" aria-label="Capítulo anterior">Anterior</button>
+    <button class="btn btn-primary" id="btnDoneMobile" type="button" aria-label="Concluir capítulo">Concluir</button>
+    <button class="btn btn-secondary" id="btnNextMobile" type="button" aria-label="Próximo capítulo">Próximo</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./experiencia-gary-vee.data.js"></script>
+  <script src="./experiencia-gary-vee.js"></script>
+</body>
+</html>

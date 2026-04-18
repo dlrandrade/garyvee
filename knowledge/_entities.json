@@ -1,0 +1,130 @@
+{
+  "generated": "2026-04-18T08:23:46.051Z",
+  "entityCount": 11,
+  "domains": {
+    "nonfiction": 11
+  },
+  "entities": [
+    {
+      "name": "Aposte nos Pontos Fortes",
+      "path": "nonfiction/concepts/pontos-fortes.md",
+      "domain": "nonfiction",
+      "type": "concept",
+      "status": "solid",
+      "aliases": [
+        "Bet on your strengths"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "Autoconsciência",
+      "path": "nonfiction/concepts/autoconsciencia.md",
+      "domain": "nonfiction",
+      "type": "concept",
+      "status": "solid",
+      "aliases": [
+        "Self-awareness"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "Empatia nos Negócios",
+      "path": "nonfiction/concepts/empatia-nos-negocios.md",
+      "domain": "nonfiction",
+      "type": "concept",
+      "status": "solid",
+      "aliases": [
+        "Empatia como competência de liderança"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "Execução Sobre Ideias",
+      "path": "nonfiction/concepts/execucao-sobre-ideias.md",
+      "domain": "nonfiction",
+      "type": "concept",
+      "status": "solid",
+      "aliases": [
+        "Execution is the game"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "Gary Vaynerchuk",
+      "path": "nonfiction/researchers/gary-vaynerchuk.md",
+      "domain": "nonfiction",
+      "type": "researcher",
+      "status": "solid",
+      "aliases": [
+        "Gary Vee"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "Hustle",
+      "path": "nonfiction/concepts/hustle.md",
+      "domain": "nonfiction",
+      "type": "concept",
+      "status": "solid",
+      "aliases": [
+        "Trabalho intenso com intenção"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "Jab, Jab, Jab, Right Hook",
+      "path": "nonfiction/frameworks/jab-jab-jab-right-hook.md",
+      "domain": "nonfiction",
+      "type": "framework",
+      "status": "solid",
+      "aliases": [
+        "Valor antes da oferta"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "Retenção de Clientes",
+      "path": "nonfiction/concepts/retencao-de-clientes.md",
+      "domain": "nonfiction",
+      "type": "concept",
+      "status": "solid",
+      "aliases": [
+        "Retention is the game"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "Tempo como ativo",
+      "path": "nonfiction/concepts/tempo-como-ativo.md",
+      "domain": "nonfiction",
+      "type": "concept",
+      "status": "solid",
+      "aliases": [
+        "Time as non-renewable asset"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "The Thank You Economy",
+      "path": "nonfiction/frameworks/the-thank-you-economy.md",
+      "domain": "nonfiction",
+      "type": "framework",
+      "status": "solid",
+      "aliases": [
+        "Economia da gratidão"
+      ],
+      "lastUpdated": "2026-04-18"
+    },
+    {
+      "name": "Wine Library: de US$3M para US$60M",
+      "path": "nonfiction/anecdotes/wine-library-3m-para-60m.md",
+      "domain": "nonfiction",
+      "type": "anecdote",
+      "status": "solid",
+      "aliases": [
+        "Transformação da Wine Library"
+      ],
+      "lastUpdated": "2026-04-18"
+    }
+  ]
+}

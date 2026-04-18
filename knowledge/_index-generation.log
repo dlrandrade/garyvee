@@ -1,0 +1,16 @@
+Scanning knowledge base: knowledge
+Found 11 entities across domains: { nonfiction: 11 }
+Index written to: knowledge/_entities.json
+
+Entities indexed:
+  - Aposte nos Pontos Fortes [concept] (+1 aliases)
+  - Autoconsciência [concept] (+1 aliases)
+  - Empatia nos Negócios [concept] (+1 aliases)
+  - Execução Sobre Ideias [concept] (+1 aliases)
+  - Gary Vaynerchuk [researcher] (+1 aliases)
+  - Hustle [concept] (+1 aliases)
+  - Jab, Jab, Jab, Right Hook [framework] (+1 aliases)
+  - Retenção de Clientes [concept] (+1 aliases)
+  - Tempo como ativo [concept] (+1 aliases)
+  - The Thank You Economy [framework] (+1 aliases)
+  - Wine Library: de US$3M para US$60M [anecdote] (+1 aliases)
