@@ -195,33 +195,22 @@
     }
 
     .auth-shell {
-      width: min(1050px, 95vw);
+      width: min(420px, 92vw);
       margin: calc(var(--safe-top) + var(--space-7)) auto var(--space-7);
       display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
+      gap: var(--space-5);
       border-radius: var(--radius-lg);
       border: 1px solid var(--line);
       background: var(--panel);
       box-shadow: var(--shadow-strong);
       backdrop-filter: blur(12px);
-      overflow: hidden;
-    }
-
-    .auth-left {
       padding: var(--space-6);
-      border-right: 1px solid var(--line);
-      display: grid;
-      align-content: space-between;
-      gap: var(--space-5);
-      background:
-        radial-gradient(500px 300px at 20% 0%, rgba(249, 193, 2, 0.18), transparent 70%),
-        linear-gradient(160deg, color-mix(in srgb, var(--panel-solid) 95%, transparent) 0%, color-mix(in srgb, var(--panel-solid) 86%, transparent) 100%);
     }
 
     .auth-headline {
       display: grid;
-      gap: var(--space-3);
-      max-width: 44ch;
+      gap: 10px;
+      text-align: center;
     }
 
     .eyebrow {
@@ -238,7 +227,7 @@
       font-weight: 700;
     }
 
-    .auth-left h1,
+    .auth-headline h1,
     .hero-card h2,
     .reader-head h3,
     .section-title,
@@ -247,9 +236,7 @@
       letter-spacing: -0.02em;
     }
 
-    /* DigitalHub headline pattern: UPPERCASE, extrabold, tight tracking,
-       with an accent span that repaints the second half in yellow. */
-    .auth-left h1,
+    .auth-headline h1,
     .hero-card h2 {
       text-transform: uppercase;
       font-weight: 900;
@@ -258,102 +245,46 @@
       text-wrap: balance;
     }
 
-    .auth-left h1 .accent,
+    .auth-headline h1 .accent,
     .hero-card h2 .accent,
     .headline .accent {
       color: var(--brand);
     }
 
-    .auth-left h1 .mute,
+    .auth-headline h1 .mute,
     .hero-card h2 .mute,
     .headline .mute {
       color: color-mix(in srgb, var(--muted) 85%, transparent);
     }
 
-    .auth-left h1 {
+    .auth-headline h1 {
       margin: 0;
-      font-size: clamp(2.4rem, 6vw, 4.5rem);
-      line-height: 0.95;
-      text-wrap: balance;
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
     }
 
-    .auth-left p {
+    .auth-headline p {
       margin: 0;
       color: var(--text-dim);
-      line-height: 1.7;
-      font-size: 1rem;
-    }
-
-    .login-cover {
-      display: grid;
-      grid-template-columns: 130px 1fr;
-      gap: var(--space-4);
-      align-items: center;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      padding: var(--space-4);
-      background: color-mix(in srgb, var(--panel-solid) 88%, transparent);
-      box-shadow: var(--shadow-soft);
-    }
-
-    .login-cover img {
-      width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.25);
-    }
-
-    .login-cover strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 1rem;
-    }
-
-    .login-cover span {
-      color: var(--text-dim);
-      font-size: 0.92rem;
       line-height: 1.5;
+      font-size: 0.92rem;
     }
 
-    .auth-right {
-      padding: var(--space-6);
-      display: grid;
-      gap: var(--space-4);
-      align-content: center;
+    .auth-switch {
+      margin: 2px 0 0;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
     }
 
-    .auth-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .auth-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--panel-solid) 88%, transparent);
-      padding: 6px;
-    }
-
-    .tab-btn {
-      border: 1px solid transparent;
-      border-radius: 10px;
-      padding: 10px;
+    .auth-switch button {
+      background: none;
+      border: 0;
+      padding: 0;
+      color: var(--brand);
+      font: inherit;
       font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      font-size: 0.74rem;
-      color: var(--text-dim);
-      background: transparent;
       cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(130deg, var(--brand), color-mix(in srgb, var(--brand) 50%, var(--brand-2)));
-      color: var(--bg);
+      margin-left: 6px;
     }
 
     .auth-form {
@@ -1393,66 +1324,28 @@
 
   <div class="shell">
     <section id="authShell" class="auth-shell" aria-labelledby="authTitle">
-      <article class="auth-left">
-        <div class="auth-headline">
-          <span class="eyebrow">Gary Vee Study OS</span>
-          <h1 id="authTitle">Aprenda 1 capítulo por dia <span class="accent">e conclua em 30 dias.</span></h1>
-          <p>Faça login para sincronizar progresso, manter streak, desbloquear badges e criar posts prontos para Story e Feed com base no capítulo e na ferramenta do dia.</p>
+      <div class="auth-headline">
+        <span class="eyebrow">Gary Vee Study OS</span>
+        <h1 id="authTitle">Entrar</h1>
+        <p id="authSubtitle">Acesse para sincronizar seu progresso.</p>
+      </div>
+
+      <form id="authForm" class="auth-form" novalidate>
+        <div class="field">
+          <label for="authEmail">E-mail</label>
+          <input id="authEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="seu@email.com" required />
         </div>
-
-        <div class="login-cover">
-          <img src="/capa-gary-vee.jpg" alt="Capa do livro 19 lições que aprendi com Gary Vee" width="180" height="255" />
-          <div>
-            <strong>Leitura + execução + compartilhamento</strong>
-            <span>Experiência gamificada com framework prático por capítulo, cards de fixação e export de progresso para inspirar novas inscrições.</span>
-          </div>
+        <div class="field">
+          <label for="authPassword">Senha</label>
+          <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="Mínimo 6 caracteres" required />
         </div>
-      </article>
+        <button class="btn btn-primary" id="btnAuthSubmit" type="submit">Entrar</button>
+      </form>
 
-      <article class="auth-right">
-        <div class="auth-top">
-          <span class="panel-title">Acesso à plataforma</span>
-        </div>
-
-        <div class="auth-tabs" role="tablist" aria-label="Modo de autenticação">
-          <button id="tabLogin" class="tab-btn active" type="button" role="tab" aria-selected="true" aria-controls="loginPane">Login</button>
-          <button id="tabSignup" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="signupPane">Cadastro</button>
-        </div>
-
-        <section id="loginPane" role="tabpanel">
-          <form id="loginForm" class="auth-form" novalidate>
-            <div class="field">
-              <label for="loginEmail">E-mail</label>
-              <input id="loginEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="seu@email.com" required />
-            </div>
-            <div class="field">
-              <label for="loginPassword">Senha</label>
-              <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Digite sua senha" required />
-            </div>
-            <div class="btn-row">
-              <button class="btn btn-primary" id="btnSubmitLogin" type="submit">Entrar</button>
-            </div>
-          </form>
-        </section>
-
-        <section id="signupPane" role="tabpanel" class="is-hidden">
-          <form id="signupForm" class="auth-form" novalidate>
-            <div class="field">
-              <label for="signupEmail">E-mail</label>
-              <input id="signupEmail" name="email" type="email" inputmode="email" autocomplete="email" placeholder="novo@email.com" required />
-            </div>
-            <div class="field">
-              <label for="signupPassword">Senha</label>
-              <input id="signupPassword" name="password" type="password" autocomplete="new-password" minlength="6" placeholder="Mínimo 6 caracteres" required />
-            </div>
-            <div class="btn-row">
-              <button class="btn btn-primary" id="btnSubmitSignup" type="submit">Criar conta</button>
-            </div>
-          </form>
-        </section>
-
-        <p class="hint">Ao entrar, seu progresso de leitura, cards e posts fica sincronizado no seu perfil.</p>
-      </article>
+      <p class="auth-switch">
+        <span id="authSwitchLabel">Primeira vez?</span>
+        <button id="btnAuthToggle" type="button">Criar conta</button>
+      </p>
     </section>
 
     <main id="main-content" class="container is-hidden" aria-labelledby="appTitle">
