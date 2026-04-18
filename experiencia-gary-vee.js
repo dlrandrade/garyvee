@@ -5,13 +5,8 @@
     return;
   }
 
-  const QUICK_EMAIL = 'dlrandrade@gmail.com';
-  const QUICK_PASSWORD = '190221';
-
-  const SUPABASE_URL = 'https://uxwzcoemwgwrtymsahxl.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4d3pjb2Vtd2d3cnR5bXNhaHhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0Njc3NTAsImV4cCI6MjA5MjA0Mzc1MH0.k9TWLEQ7YaMiUjEo_UFtzxxRcjY0AvTMwQOizWohCMc';
-
-  const STORAGE_KEY = 'gary_vee_game_reader_v4';
+  const STORAGE_KEY = 'gary_vee_game_reader_v5';
+  const THEME_KEY = 'gv_theme';
 
   const badgesConfig = [
     { id: 'start', label: 'Primeiro passo', check: (s) => Object.keys(s.done).length >= 1 },
@@ -36,6 +31,11 @@
   let syncTimer = null;
   let toastCounter = 0;
 
+  const runtimeConfig = {
+    supabaseUrl: '',
+    supabaseKey: ''
+  };
+
   const state = loadState();
   selectedChapterId = String(state.selectedChapter || 1).padStart(2, '0');
 
@@ -58,8 +58,12 @@
     signupEmail: byId('signupEmail'),
     signupPassword: byId('signupPassword'),
 
-    btnQuickFill: byId('btnQuickFill'),
+    accountName: byId('accountName'),
+    accountEmail: byId('accountEmail'),
     btnSignOut: byId('btnSignOut'),
+
+    btnThemeToggle: byId('btnThemeToggle'),
+    btnThemeToggleAuth: byId('btnThemeToggleAuth'),
 
     chipRow: byId('chipRow'),
     chapterList: byId('chapterList'),
@@ -96,6 +100,10 @@
     crossInsight: byId('crossInsight'),
     entityCount: byId('entityCount'),
 
+    kpiDone: byId('kpiDone'),
+    kpiStreak: byId('kpiStreak'),
+    kpiXp: byId('kpiXp'),
+
     layoutMain: byId('layoutMain'),
     sideCol: document.querySelector('.side-col'),
     navCard: document.querySelector('.nav-card'),
@@ -127,10 +135,13 @@
     storyBodyB: byId('storyBodyB'),
     storyFooter: byId('storyFooter'),
     postCanvas: byId('postCanvas'),
+    progressCanvas: byId('progressCanvas'),
 
     btnDownloadPost: byId('btnDownloadPost'),
     btnCopyCaption: byId('btnCopyCaption'),
     btnDailyShare: byId('btnDailyShare'),
+    btnExportProgress: byId('btnExportProgress'),
+    btnCopyProgress: byId('btnCopyProgress'),
 
     bookMockup: byId('bookMockup'),
     bookStage: byId('bookStage')
@@ -158,6 +169,7 @@
       flashSeen: {},
       flashDone: {},
       selectedChapter: 1,
+      selectedTheme: 'Todos',
       lastSyncAt: null
     };
   }
@@ -173,8 +185,9 @@
       merged.logs = Array.isArray(merged.logs) ? merged.logs : [];
       merged.flashSeen = merged.flashSeen || {};
       merged.flashDone = merged.flashDone || {};
+      merged.selectedTheme = merged.selectedTheme || 'Todos';
       return merged;
-    } catch {
+    } catch (_e) {
       return fallback;
     }
   }
@@ -182,7 +195,9 @@
   function saveState(options) {
     const opts = options || {};
     state.selectedChapter = Number(selectedChapterId);
+    state.selectedTheme = selectedTheme;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
     if (opts.queueCloud !== false) {
       queueCloudSave();
     }
@@ -218,6 +233,7 @@
 
   function showToast(message, type) {
     if (!el.toastArea) return;
+
     const kind = type || 'success';
     toastCounter += 1;
 
@@ -226,11 +242,12 @@
     node.setAttribute('role', 'status');
     node.textContent = message;
     node.dataset.toastId = String(toastCounter);
+
     el.toastArea.appendChild(node);
 
-    window.setTimeout(() => {
+    window.setTimeout(function () {
       node.remove();
-    }, 3400);
+    }, 3600);
   }
 
   function daysBetween(a, b) {
@@ -245,6 +262,7 @@
 
     let streak = 0;
     const cursor = new Date();
+
     while (true) {
       const key = dateKey(cursor);
       if (logs.includes(key)) {
@@ -254,6 +272,7 @@
         break;
       }
     }
+
     return streak;
   }
 
@@ -278,8 +297,15 @@
     return APP_DATA.chapters.find((chapter) => chapter.id === id) || APP_DATA.chapters[0];
   }
 
+  function compactText(text, maxLen) {
+    const clean = String(text || '').replace(/\s+/g, ' ').trim();
+    if (clean.length <= maxLen) return clean;
+    return clean.slice(0, Math.max(0, maxLen - 1)).trimEnd() + '…';
+  }
+
   function setAuthTab(tab) {
     const isLogin = tab === 'login';
+
     el.tabLogin.classList.toggle('active', isLogin);
     el.tabSignup.classList.toggle('active', !isLogin);
 
@@ -306,14 +332,78 @@
     }
   }
 
+  function setTheme(theme) {
+    const next = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem(THEME_KEY, next);
+
+    const themeColor = next === 'light' ? '#edf3ff' : '#0f1726';
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) {
+      themeMeta.setAttribute('content', themeColor);
+    }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  }
+
+  function setupThemeButtons() {
+    [el.btnThemeToggle, el.btnThemeToggleAuth].forEach(function (btn) {
+      if (!btn) return;
+      btn.addEventListener('click', toggleTheme);
+    });
+  }
+
+  async function getRuntimeConfig() {
+    const fallback = window.__APP_CONFIG__ || {};
+    let fromApi = {};
+
+    try {
+      const res = await fetch('/api/config', { cache: 'no-store' });
+      if (res.ok) {
+        fromApi = await res.json();
+      }
+    } catch (_error) {
+      fromApi = {};
+    }
+
+    const supabaseUrl =
+      fromApi.supabaseUrl ||
+      fromApi.NEXT_PUBLIC_SUPABASE_URL ||
+      fallback.supabaseUrl ||
+      fallback.NEXT_PUBLIC_SUPABASE_URL ||
+      '';
+
+    const supabaseKey =
+      fromApi.supabasePublishableKey ||
+      fromApi.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+      fromApi.supabaseAnonKey ||
+      fromApi.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      fallback.supabasePublishableKey ||
+      fallback.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+      fallback.supabaseAnonKey ||
+      fallback.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      '';
+
+    runtimeConfig.supabaseUrl = String(supabaseUrl || '').trim();
+    runtimeConfig.supabaseKey = String(supabaseKey || '').trim();
+  }
+
   function initSupabase() {
     if (!window.supabase || typeof window.supabase.createClient !== 'function') {
-      showToast('Supabase SDK nao carregou. Funciona somente local.', 'error');
+      showToast('SDK do Supabase nao carregado.', 'error');
+      return;
+    }
+
+    if (!runtimeConfig.supabaseUrl || !runtimeConfig.supabaseKey) {
+      showToast('Variaveis do Supabase ausentes na Vercel.', 'error');
       return;
     }
 
     try {
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      supabaseClient = window.supabase.createClient(runtimeConfig.supabaseUrl, runtimeConfig.supabaseKey, {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
@@ -323,7 +413,7 @@
       cloudEnabled = true;
     } catch (error) {
       console.error(error);
-      showToast('Falha ao iniciar Supabase. Mantendo modo local.', 'error');
+      showToast('Falha ao iniciar Supabase.', 'error');
       cloudEnabled = false;
       return;
     }
@@ -346,6 +436,7 @@
 
     const sessionResult = await supabaseClient.auth.getSession();
     const session = sessionResult.data ? sessionResult.data.session : null;
+
     if (session && session.user) {
       await handleSignedIn(session.user);
     } else {
@@ -353,8 +444,29 @@
     }
   }
 
+  function userDisplayName(user) {
+    if (!user) return 'Leitor';
+
+    if (user.user_metadata && typeof user.user_metadata.full_name === 'string' && user.user_metadata.full_name.trim()) {
+      return user.user_metadata.full_name.trim();
+    }
+
+    const email = user.email || '';
+    if (!email.includes('@')) return email || 'Leitor';
+    const namePart = email.split('@')[0].replace(/[._-]+/g, ' ').trim();
+    return namePart ? namePart.replace(/\b\w/g, (c) => c.toUpperCase()) : email;
+  }
+
+  function updateAccountUi(user) {
+    if (!user) return;
+
+    el.accountName.textContent = userDisplayName(user);
+    el.accountEmail.textContent = user.email || 'Sem e-mail';
+  }
+
   async function handleSignedIn(user) {
     currentUser = user;
+    updateAccountUi(user);
     toggleAppShell(true);
 
     if (!appBooted) {
@@ -364,7 +476,7 @@
     await hydrateCloudState();
     renderAll();
 
-    showToast('Sessao ativa para ' + user.email + '.', 'success');
+    showToast('Sessao ativa para ' + (user.email || 'usuario') + '.', 'success');
   }
 
   async function hydrateCloudState() {
@@ -372,20 +484,18 @@
 
     isHydratingCloud = true;
     try {
-      const query = supabaseClient
+      const result = await supabaseClient
         .from('reader_state')
         .select('data, selected_chapter, xp, start_date')
         .eq('user_id', currentUser.id)
         .maybeSingle();
 
-      const result = await query;
       if (result.error && result.error.code !== 'PGRST116') {
         throw result.error;
       }
 
       if (result.data && result.data.data) {
-        const cloudData = result.data.data;
-        applySnapshot(cloudData);
+        applySnapshot(result.data.data);
 
         if (result.data.selected_chapter) {
           selectedChapterId = String(result.data.selected_chapter).padStart(2, '0');
@@ -404,7 +514,7 @@
       await persistReaderSnapshot();
     } catch (error) {
       console.error(error);
-      showToast('Nao foi possivel carregar progresso da nuvem.', 'error');
+      showToast('Falha ao carregar progresso em nuvem.', 'error');
     } finally {
       isHydratingCloud = false;
     }
@@ -421,7 +531,7 @@
       persistReaderSnapshot().catch(function (error) {
         console.error(error);
       });
-    }, 500);
+    }, 560);
   }
 
   async function persistReaderSnapshot() {
@@ -525,8 +635,8 @@
   function chapterVisible(chapter) {
     const query = el.search.value.trim().toLowerCase();
     const byTheme = selectedTheme === 'Todos' || chapter.theme === selectedTheme;
-    if (!byTheme) return false;
 
+    if (!byTheme) return false;
     if (!query) return true;
 
     const text = [
@@ -632,27 +742,27 @@
   }
 
   function shareTemplateFor(chapter, variant) {
+    const sourceLabel = 'Fonte Gary Vee: ' + String(chapter.source || '').replace('Obra relacionada: ', '').trim();
+
     if (variant === 'tool') {
-      const toolkit = chapter.toolkit || { name: 'Tool', formula: '', how: [] };
+      const toolkit = chapter.toolkit || { name: 'Ferramenta', formula: '', how: [] };
       const steps = Array.isArray(toolkit.how) ? toolkit.how : [];
 
       return {
-        main: 'Tool do capitulo: ' + toolkit.name,
+        main: compactText(toolkit.name || chapter.title, 120),
         bodyA: toolkit.formula
-          ? 'Formula: ' + toolkit.formula + '. Transforme teoria em acao com um passo por vez.'
-          : 'Ferramenta pratica para executar o aprendizado hoje.',
-        bodyB:
-          steps.slice(0, 2).join(' | ') ||
-          'Aplique agora, mensure e refine. Sem execucao, insight vira ruido.',
-        footer: 'Fonte Gary Vee: ' + chapter.source.replace('Obra relacionada: ', '')
+          ? compactText('Formula: ' + toolkit.formula + '. Execute com consistencia e ajuste semanal.', 220)
+          : compactText('Aplique a ferramenta do capitulo agora e transforme teoria em resultado.', 220),
+        bodyB: compactText(steps.slice(0, 2).join(' | ') || chapter.actions[0] || chapter.reflection, 220),
+        footer: sourceLabel
       };
     }
 
     return {
-      main: chapter.quotePt,
-      bodyA: chapter.lesson,
-      bodyB: chapter.actions[0] || chapter.reflection,
-      footer: 'Fonte Gary Vee: ' + chapter.source.replace('Obra relacionada: ', '')
+      main: compactText(chapter.quotePt, 170),
+      bodyA: compactText(chapter.lesson, 230),
+      bodyB: compactText('Acao de hoje: ' + (chapter.actions[0] || chapter.reflection), 220),
+      footer: sourceLabel
     };
   }
 
@@ -681,7 +791,8 @@
     ensureShareChapterOptions();
 
     el.shareChapterSelect.value = chapter.id;
-    if (forceTemplate !== false) {
+
+    if (forceTemplate) {
       applyShareTemplate(chapter, el.shareVariantSelect.value);
     } else {
       updatePostPreview();
@@ -692,10 +803,10 @@
     const format = el.shareFormatSelect.value;
     el.storyFrame.dataset.format = format;
 
-    el.storyMain.textContent = el.shareMainInput.value.trim();
-    el.storyBodyA.textContent = el.shareBodyInput.value.trim();
-    el.storyBodyB.textContent = el.shareBodyInputB.value.trim();
-    el.storyFooter.textContent = el.shareTagInput.value.trim();
+    el.storyMain.textContent = String(el.shareMainInput.value || '').trim();
+    el.storyBodyA.textContent = String(el.shareBodyInput.value || '').trim();
+    el.storyBodyB.textContent = String(el.shareBodyInputB.value || '').trim();
+    el.storyFooter.textContent = String(el.shareTagInput.value || '').trim();
   }
 
   function wrapText(ctx, text, maxWidth) {
@@ -728,13 +839,13 @@
 
   function postCaption() {
     return [
-      el.shareMainInput.value.trim(),
+      String(el.shareMainInput.value || '').trim(),
       '',
-      el.shareBodyInput.value.trim(),
+      String(el.shareBodyInput.value || '').trim(),
       '',
-      el.shareBodyInputB.value.trim(),
+      String(el.shareBodyInputB.value || '').trim(),
       '',
-      el.shareTagInput.value.trim()
+      String(el.shareTagInput.value || '').trim()
     ].join('\n');
   }
 
@@ -758,57 +869,57 @@
     ctx.clearRect(0, 0, width, height);
 
     const bg = ctx.createLinearGradient(0, 0, width, height);
-    bg.addColorStop(0, '#0b0e13');
-    bg.addColorStop(0.5, '#10161f');
-    bg.addColorStop(1, '#0a0f15');
+    bg.addColorStop(0, '#0f1728');
+    bg.addColorStop(0.5, '#162338');
+    bg.addColorStop(1, '#0b1220');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, width, height);
 
-    const glow1 = ctx.createRadialGradient(width * 0.84, height * 0.12, 10, width * 0.84, height * 0.12, 450);
-    glow1.addColorStop(0, 'rgba(124,211,255,0.22)');
-    glow1.addColorStop(1, 'rgba(124,211,255,0)');
-    ctx.fillStyle = glow1;
+    const glowA = ctx.createRadialGradient(width * 0.84, height * 0.1, 20, width * 0.84, height * 0.1, 460);
+    glowA.addColorStop(0, 'rgba(109,198,255,0.26)');
+    glowA.addColorStop(1, 'rgba(109,198,255,0)');
+    ctx.fillStyle = glowA;
     ctx.fillRect(0, 0, width, height);
 
-    const glow2 = ctx.createRadialGradient(width * 0.14, height * 0.82, 20, width * 0.14, height * 0.82, 520);
-    glow2.addColorStop(0, 'rgba(243,178,77,0.20)');
-    glow2.addColorStop(1, 'rgba(243,178,77,0)');
-    ctx.fillStyle = glow2;
+    const glowB = ctx.createRadialGradient(width * 0.12, height * 0.88, 20, width * 0.12, height * 0.88, 520);
+    glowB.addColorStop(0, 'rgba(255,198,127,0.2)');
+    glowB.addColorStop(1, 'rgba(255,198,127,0)');
+    ctx.fillStyle = glowB;
     ctx.fillRect(0, 0, width, height);
 
     const blockW = Math.round(width * (format === 'feed' ? 0.74 : 0.72));
     const x = Math.round((width - blockW) / 2);
 
-    const topMargin = format === 'feed' ? 190 : 250;
-    const gapMainToBody = format === 'feed' ? 62 : 80;
-    const gapBodyToFooter = format === 'feed' ? 54 : 72;
+    const topMargin = format === 'feed' ? 180 : 250;
+    const gapMainBody = format === 'feed' ? 58 : 80;
+    const gapBodyFooter = format === 'feed' ? 48 : 70;
 
     let y = topMargin;
 
     ctx.fillStyle = '#ffffff';
     ctx.font = format === 'feed'
-      ? '700 62px "Classic", "Archivo Black", sans-serif'
-      : '700 66px "Classic", "Archivo Black", sans-serif';
-    y = drawParagraph(ctx, el.shareMainInput.value.trim(), x, y, blockW, format === 'feed' ? 72 : 80);
+      ? '400 64px "Classic", "EB Garamond", serif'
+      : '400 68px "Classic", "EB Garamond", serif';
+    y = drawParagraph(ctx, String(el.shareMainInput.value || '').toUpperCase(), x, y, blockW, format === 'feed' ? 74 : 82);
 
-    y += gapMainToBody;
+    y += gapMainBody;
 
-    ctx.fillStyle = '#ede8df';
+    ctx.fillStyle = '#e9f0fb';
     ctx.font = format === 'feed'
-      ? '600 50px "Literature", "Cormorant Garamond", serif'
-      : '600 54px "Literature", "Cormorant Garamond", serif';
-    y = drawParagraph(ctx, el.shareBodyInput.value.trim(), x, y, blockW, format === 'feed' ? 58 : 64);
+      ? '500 46px "Literature", "Inter", sans-serif'
+      : '500 50px "Literature", "Inter", sans-serif';
+    y = drawParagraph(ctx, String(el.shareBodyInput.value || ''), x, y, blockW, format === 'feed' ? 58 : 62);
 
-    y += 40;
-    y = drawParagraph(ctx, el.shareBodyInputB.value.trim(), x, y, blockW, format === 'feed' ? 58 : 64);
+    y += 34;
+    y = drawParagraph(ctx, String(el.shareBodyInputB.value || ''), x, y, blockW, format === 'feed' ? 58 : 62);
 
-    y += gapBodyToFooter;
+    y += gapBodyFooter;
 
-    ctx.fillStyle = '#c9c1b2';
+    ctx.fillStyle = '#c3d3eb';
     ctx.font = format === 'feed'
-      ? '500 34px "Literature", "Cormorant Garamond", serif'
-      : '500 40px "Literature", "Cormorant Garamond", serif';
-    drawParagraph(ctx, el.shareTagInput.value.trim(), x, y, blockW, format === 'feed' ? 42 : 48);
+      ? '500 32px "Literature", "Inter", sans-serif'
+      : '500 38px "Literature", "Inter", sans-serif';
+    drawParagraph(ctx, String(el.shareTagInput.value || ''), x, y, blockW, format === 'feed' ? 40 : 46);
 
     const link = document.createElement('a');
     link.download = 'gary-vee-capitulo-' + chapterId + '-' + variant + '-' + format + '.png';
@@ -821,10 +932,10 @@
       chapter_id: chapterId,
       post_format: format,
       post_variant: variant,
-      headline: el.shareMainInput.value.trim(),
-      body_a: el.shareBodyInput.value.trim(),
-      body_b: el.shareBodyInputB.value.trim(),
-      footer: el.shareTagInput.value.trim(),
+      headline: String(el.shareMainInput.value || '').trim(),
+      body_a: String(el.shareBodyInput.value || '').trim(),
+      body_b: String(el.shareBodyInputB.value || '').trim(),
+      footer: String(el.shareTagInput.value || '').trim(),
       caption: postCaption()
     }).catch(function (error) {
       console.error(error);
@@ -833,13 +944,159 @@
   }
 
   async function copyCaption() {
-    const caption = postCaption();
     try {
-      await navigator.clipboard.writeText(caption);
+      await navigator.clipboard.writeText(postCaption());
       showToast('Legenda copiada.', 'success');
     } catch (error) {
       console.error(error);
       showToast('Nao foi possivel copiar automaticamente.', 'error');
+    }
+  }
+
+  function progressText() {
+    const status = computeStatus(state);
+    const streak = getStreak(state);
+    const percent = Math.round((status.completed / APP_DATA.chapters.length) * 100);
+
+    return [
+      'Meu progresso no Gary Vee Learning Experience',
+      '',
+      '- Capítulos concluídos: ' + status.completed + '/' + APP_DATA.chapters.length,
+      '- Streak: ' + streak + ' dias',
+      '- XP acumulado: ' + state.xp,
+      '- Progresso total: ' + percent + '%',
+      '',
+      'Estou no desafio de leitura diária. Vem comigo.'
+    ].join('\n');
+  }
+
+  async function exportProgressPng() {
+    await document.fonts.ready;
+
+    const status = computeStatus(state);
+    const streak = getStreak(state);
+    const percent = Math.round((status.completed / APP_DATA.chapters.length) * 100);
+
+    const canvas = el.progressCanvas;
+    canvas.width = 1080;
+    canvas.height = 1350;
+
+    const ctx = canvas.getContext('2d');
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    bg.addColorStop(0, '#0f1728');
+    bg.addColorStop(1, '#09111e');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const userName = currentUser ? userDisplayName(currentUser) : 'Leitor';
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 58px "Inter", sans-serif';
+    ctx.fillText('Meu progresso de leitura Gary Vee', 86, 130);
+
+    ctx.fillStyle = '#bed0eb';
+    ctx.font = '500 36px "Inter", sans-serif';
+    ctx.fillText(userName + ' • desafio 30 em 30', 86, 185);
+
+    const cards = [
+      { label: 'Capítulos', value: status.completed + '/' + APP_DATA.chapters.length },
+      { label: 'Streak', value: String(streak) + ' dias' },
+      { label: 'XP', value: String(state.xp) },
+      { label: 'Progresso', value: String(percent) + '%' }
+    ];
+
+    cards.forEach(function (card, index) {
+      const col = index % 2;
+      const row = Math.floor(index / 2);
+      const x = 86 + col * 460;
+      const y = 250 + row * 210;
+
+      ctx.fillStyle = 'rgba(21,36,58,0.84)';
+      ctx.strokeStyle = 'rgba(160,188,232,0.35)';
+      ctx.lineWidth = 2;
+      roundRect(ctx, x, y, 390, 170, 22, true, true);
+
+      ctx.fillStyle = '#9cb5db';
+      ctx.font = '600 24px "Inter", sans-serif';
+      ctx.fillText(card.label.toUpperCase(), x + 28, y + 52);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 54px "Inter", sans-serif';
+      ctx.fillText(card.value, x + 28, y + 118);
+    });
+
+    const barX = 86;
+    const barY = 710;
+    const barW = 908;
+    const barH = 20;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.14)';
+    roundRect(ctx, barX, barY, barW, barH, 999, true, false);
+
+    const progressW = Math.round((percent / 100) * barW);
+    const grad = ctx.createLinearGradient(barX, barY, barX + progressW, barY + barH);
+    grad.addColorStop(0, '#6dc6ff');
+    grad.addColorStop(1, '#70e8b6');
+    ctx.fillStyle = grad;
+    roundRect(ctx, barX, barY, progressW, barH, 999, true, false);
+
+    ctx.fillStyle = '#e3eefc';
+    ctx.font = '600 30px "Inter", sans-serif';
+    ctx.fillText('Consistencia > motivacao. Um capitulo por dia.', 86, 790);
+
+    ctx.fillStyle = '#bfd2ed';
+    ctx.font = '500 28px "Inter", sans-serif';
+    ctx.fillText('Entre na plataforma e acompanhe seu avanço com gamificacao.', 86, 840);
+
+    ctx.fillStyle = '#9db8dd';
+    ctx.font = '500 24px "Inter", sans-serif';
+    ctx.fillText('gary vee learning experience', 86, 1240);
+
+    const link = document.createElement('a');
+    link.download = 'progresso-gary-vee.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    showToast('Card de progresso exportado.', 'success');
+
+    persistShareExport({
+      chapter_id: String(chapterOfDay().id),
+      post_format: 'feed',
+      post_variant: 'progress',
+      headline: 'Progresso de leitura',
+      body_a: progressText(),
+      body_b: '',
+      footer: 'Gary Vee Learning Experience',
+      caption: progressText()
+    }).catch(function (error) {
+      console.error(error);
+      showToast('Nao foi possivel salvar historico do progresso.', 'error');
+    });
+  }
+
+  function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+    const radius = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + w, y, x + w, y + h, radius);
+    ctx.arcTo(x + w, y + h, x, y + h, radius);
+    ctx.arcTo(x, y + h, x, y, radius);
+    ctx.arcTo(x, y, x + w, y, radius);
+    ctx.closePath();
+    if (fill) ctx.fill();
+    if (stroke) ctx.stroke();
+  }
+
+  async function copyProgressText() {
+    try {
+      await navigator.clipboard.writeText(progressText());
+      showToast('Resumo de progresso copiado.', 'success');
+    } catch (error) {
+      console.error(error);
+      showToast('Nao foi possivel copiar o progresso.', 'error');
     }
   }
 
@@ -900,12 +1157,12 @@
       })
       .join('');
 
-    el.btnMarkDone.textContent = done ? 'Concluido ✔' : 'Marcar capitulo como concluido';
+    el.btnMarkDone.textContent = done ? 'Concluido ✔' : 'Marcar capitulo concluido';
     el.btnDoneBottom.textContent = done ? 'Capitulo ja concluido ✔' : 'Concluir capitulo + XP';
     el.btnDoneMobile.textContent = done ? 'Concluido ✔' : 'Concluir';
 
     renderFlashcards(chapter);
-    bindShareForChapter(chapter, false);
+    bindShareForChapter(chapter, true);
     renderChapterList();
 
     saveState();
@@ -919,6 +1176,10 @@
     el.statDone.textContent = String(status.completed);
     el.statStreak.textContent = String(streak);
     el.xpValue.textContent = String(state.xp) + ' XP';
+
+    el.kpiDone.textContent = String(status.completed);
+    el.kpiStreak.textContent = String(streak);
+    el.kpiXp.textContent = String(state.xp);
 
     const progress = Math.min((status.completed / APP_DATA.chapters.length) * 100, 100);
     el.xpBar.style.width = progress + '%';
@@ -990,14 +1251,9 @@
   function toggleFocusMode() {
     focusMode = !focusMode;
 
-    if (el.navCard) {
-      el.navCard.classList.toggle('is-hidden', focusMode);
-    }
-    if (el.sideCol) {
-      el.sideCol.classList.toggle('is-hidden', focusMode);
-    }
-
+    el.layoutMain.classList.toggle('focus-mode', focusMode);
     el.btnFocus.textContent = focusMode ? 'Sair do foco' : 'Modo foco';
+
     showToast(focusMode ? 'Modo foco ativado.' : 'Modo foco desativado.', 'success');
   }
 
@@ -1016,13 +1272,13 @@
       const px = (ev.clientX - rect.left) / rect.width;
       const py = (ev.clientY - rect.top) / rect.height;
 
-      const rotateY = -30 + px * 16;
-      const rotateX = 10 - py * 10;
+      const rotateY = -24 + px * 16;
+      const rotateX = 8 - py * 10;
       el.bookMockup.style.transform = 'rotateY(' + rotateY + 'deg) rotateX(' + rotateX + 'deg)';
     });
 
     el.bookStage.addEventListener('mouseleave', function () {
-      el.bookMockup.style.transform = 'rotateY(-25deg) rotateX(7deg)';
+      el.bookMockup.style.transform = 'rotateY(-24deg) rotateX(8deg)';
     });
   }
 
@@ -1096,6 +1352,9 @@
       showToast('Template do capitulo do dia aplicado.', 'success');
     });
 
+    el.btnExportProgress.addEventListener('click', exportProgressPng);
+    el.btnCopyProgress.addEventListener('click', copyProgressText);
+
     window.addEventListener('scroll', trackScrollProgress, { passive: true });
 
     document.addEventListener('keydown', function (ev) {
@@ -1117,18 +1376,11 @@
       setAuthTab('signup');
     });
 
-    el.btnQuickFill.addEventListener('click', function () {
-      el.loginEmail.value = QUICK_EMAIL;
-      el.loginPassword.value = QUICK_PASSWORD;
-      setAuthTab('login');
-      showToast('Credenciais de acesso rapido preenchidas.', 'success');
-    });
-
     el.loginForm.addEventListener('submit', async function (ev) {
       ev.preventDefault();
 
       if (!cloudEnabled || !supabaseClient) {
-        showToast('Supabase indisponivel para login.', 'error');
+        showToast('Configure o Supabase na Vercel para habilitar login.', 'error');
         return;
       }
 
@@ -1153,7 +1405,7 @@
       ev.preventDefault();
 
       if (!cloudEnabled || !supabaseClient) {
-        showToast('Supabase indisponivel para cadastro.', 'error');
+        showToast('Configure o Supabase na Vercel para habilitar cadastro.', 'error');
         return;
       }
 
@@ -1191,7 +1443,7 @@
     el.btnSignOut.addEventListener('click', async function () {
       if (!cloudEnabled || !supabaseClient) {
         toggleAppShell(false);
-        showToast('Sessao local encerrada.', 'success');
+        showToast('Sessao encerrada.', 'success');
         return;
       }
 
@@ -1206,6 +1458,16 @@
     });
   }
 
+  function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/service-worker.js').catch(function (error) {
+        console.error('SW registration failed:', error);
+      });
+    });
+  }
+
   function bootApp() {
     if (appBooted) return;
     appBooted = true;
@@ -1215,14 +1477,17 @@
   }
 
   async function init() {
+    setupThemeButtons();
+    registerServiceWorker();
     setupAuthEvents();
     setAuthTab('login');
 
+    await getRuntimeConfig();
     initSupabase();
     await restoreSession();
 
     if (!cloudEnabled) {
-      showToast('Modo local ativo. Login depende do Supabase.', 'error');
+      showToast('Sem config de Supabase ativa. Defina env na Vercel.', 'error');
     }
   }
 

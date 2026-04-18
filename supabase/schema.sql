@@ -69,7 +69,7 @@ create table if not exists public.share_exports (
   created_at timestamptz not null default timezone('utc', now()),
   constraint share_exports_chapter_check check (chapter_id ~ '^[0-9]{2}$'),
   constraint share_exports_format_check check (post_format in ('story', 'feed')),
-  constraint share_exports_variant_check check (post_variant in ('insight', 'tool'))
+  constraint share_exports_variant_check check (post_variant in ('insight', 'tool', 'progress'))
 );
 
 create index if not exists idx_reading_progress_user_completed

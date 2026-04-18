@@ -11,19 +11,15 @@ O app usa apenas a chave publica (`anon`) no cliente:
 
 A chave `service_role` **nao deve** ficar no frontend.
 
-## 3) Usuario padrao de acesso rapido
-Credenciais esperadas pela tela:
-
-- Email: `dlrandrade@gmail.com`
-- Senha: `190221`
-
-Se a conta ainda nao existir, crie pelo painel Auth ou via Admin API (service role) fora do frontend.
+## 3) Conta inicial
+Crie a primeira conta de acesso diretamente pelo painel Auth do Supabase (ou por Admin API no backend). Nao exponha credenciais no frontend.
 
 ## 4) Dados persistidos no banco
 - `reader_state`: snapshot completo da jornada (XP, capitulos, logs, estado local)
 - `reading_progress`: conclusao de capitulos
 - `flashcard_progress`: fixacao dos cards
 - `share_exports`: historico de posts gerados (story/feed e insight/tool)
+  - Inclui tambem export de progresso (`post_variant = progress`)
 
 ## 5) Fluxo de seguranca
 - RLS ativa em todas as tabelas.

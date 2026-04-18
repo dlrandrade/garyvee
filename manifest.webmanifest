@@ -1,0 +1,30 @@
+{
+  "name": "Gary Vee Learning Experience",
+  "short_name": "GaryVee Reader",
+  "description": "Leitura gameficada com 30 capitulos, progresso diario e share studio.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1726",
+  "theme_color": "#0f1726",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icons/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
