@@ -912,8 +912,8 @@
     ctx.fillRect(0, 0, width, height);
 
     const glowA = ctx.createRadialGradient(width * 0.84, height * 0.1, 20, width * 0.84, height * 0.1, 460);
-    glowA.addColorStop(0, 'rgba(234,181,2,0.24)');
-    glowA.addColorStop(1, 'rgba(234,181,2,0)');
+    glowA.addColorStop(0, 'rgba(249,193,2,0.24)');
+    glowA.addColorStop(1, 'rgba(249,193,2,0)');
     ctx.fillStyle = glowA;
     ctx.fillRect(0, 0, width, height);
 
@@ -1043,7 +1043,7 @@
 
     y += gapBodyFooter;
 
-    ctx.fillStyle = '#eab502';
+    ctx.fillStyle = '#f9c102';
     ctx.font = '600 ' + sourceSize + 'px "EB Garamond", "Outfit", serif';
     layout.sourceLines.forEach(function (line) {
       ctx.fillText(line, x, y);
@@ -1051,7 +1051,7 @@
     });
 
     y += gapFooterCredit;
-    ctx.fillStyle = 'rgba(234,181,2,0.92)';
+    ctx.fillStyle = 'rgba(249,193,2,0.92)';
     ctx.font = '500 ' + creditSize + 'px "EB Garamond", "Outfit", serif';
     layout.creditLines.forEach(function (line) {
       ctx.fillText(line, x, y);
@@ -1156,7 +1156,7 @@
       ctx.lineWidth = 2;
       roundRect(ctx, x, y, 390, 170, 22, true, true);
 
-      ctx.fillStyle = '#eab502';
+      ctx.fillStyle = '#f9c102';
       ctx.font = '600 24px "Outfit", sans-serif';
       ctx.fillText(card.label.toUpperCase(), x + 28, y + 52);
 
@@ -1175,8 +1175,8 @@
 
     const progressW = Math.round((percent / 100) * barW);
     const grad = ctx.createLinearGradient(barX, barY, barX + progressW, barY + barH);
-    grad.addColorStop(0, '#eab502');
-    grad.addColorStop(1, '#c29300');
+    grad.addColorStop(0, '#f9c102');
+    grad.addColorStop(1, '#d1a302');
     ctx.fillStyle = grad;
     roundRect(ctx, barX, barY, progressW, barH, 999, true, false);
 
@@ -1188,7 +1188,7 @@
     ctx.font = '500 28px "Outfit", sans-serif';
     ctx.fillText('Entre na plataforma e acompanhe seu avanço com gamificacao.', 86, 840);
 
-    ctx.fillStyle = '#eab502';
+    ctx.fillStyle = '#f9c102';
     ctx.font = '500 24px "Outfit", sans-serif';
     ctx.fillText('gary vee learning experience', 86, 1240);
 
