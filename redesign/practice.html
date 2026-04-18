@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>Practice · GaryVee Redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./tokens.css" />
+  <style>
+    .practice {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: calc(var(--safe-top) + 24px) 22px 120px;
+      display: grid;
+      gap: 22px;
+      min-height: 100dvh;
+    }
+
+    .practice-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .practice-top .back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--rmm-border);
+      color: var(--rmm-text);
+    }
+
+    .practice-top .progress {
+      flex: 1;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--rmm-surface-3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .practice-top .progress span {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 37.5%;
+      background: var(--rmm-yellow);
+      box-shadow: 0 0 6px rgba(249, 193, 2, 0.5);
+      transition: width 260ms var(--ease-out);
+    }
+
+    .practice-top .counter {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rmm-subtle);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .practice-top .counter b {
+      color: var(--rmm-text);
+    }
+
+    .heading-block {
+      display: grid;
+      gap: 10px;
+      padding-top: 4px;
+    }
+
+    .heading-block .eyebrow {
+      color: var(--rmm-yellow);
+    }
+
+    .heading-block h1 {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.035em;
+      line-height: 0.92;
+      margin: 0;
+      font-size: clamp(2rem, 8.5vw, 2.8rem);
+    }
+
+    .heading-block h1 .accent {
+      color: var(--rmm-yellow);
+    }
+
+    .heading-block p {
+      margin: 0;
+      color: var(--rmm-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* card stack */
+    .deck {
+      position: relative;
+      height: 440px;
+      perspective: 1200px;
+    }
+
+    .flashcard {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-lg);
+      background: var(--rmm-surface);
+      border: 1px solid var(--rmm-border);
+      padding: 32px 28px;
+      display: grid;
+      align-content: space-between;
+      transform-style: preserve-3d;
+      transform-origin: center;
+      transition: transform 420ms var(--ease-out), opacity 260ms var(--ease-out);
+      will-change: transform;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .flashcard[data-pos="0"] { z-index: 3; transform: translateY(0) scale(1); }
+    .flashcard[data-pos="1"] { z-index: 2; transform: translateY(12px) scale(0.97); opacity: 0.85; }
+    .flashcard[data-pos="2"] { z-index: 1; transform: translateY(22px) scale(0.94); opacity: 0.6; }
+    .flashcard[data-pos="3"] { z-index: 0; transform: translateY(30px) scale(0.91); opacity: 0.35; }
+    .flashcard[data-pos="hidden"] { display: none; }
+
+    .flashcard.flipped .face.front { transform: rotateY(180deg); }
+    .flashcard.flipped .face.back { transform: rotateY(0); }
+
+    .flashcard .face {
+      position: absolute;
+      inset: 0;
+      padding: 32px 28px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+      backface-visibility: hidden;
+      transition: transform 420ms var(--ease-out);
+      border-radius: inherit;
+    }
+
+    .flashcard .face.front { transform: rotateY(0); }
+    .flashcard .face.back { transform: rotateY(-180deg); background: var(--rmm-surface-2); border-radius: inherit; }
+
+    .flashcard .tag {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.66rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rmm-subtle);
+      font-weight: 700;
+    }
+
+    .flashcard .tag .dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--rmm-yellow);
+      margin-right: 6px;
+    }
+
+    .flashcard .question {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-style: italic;
+      font-size: 1.6rem;
+      line-height: 1.35;
+      color: var(--rmm-text);
+      align-self: center;
+      text-wrap: balance;
+    }
+
+    .flashcard .answer {
+      align-self: center;
+      display: grid;
+      gap: 14px;
+    }
+
+    .flashcard .answer h4 {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      font-size: 1.2rem;
+      line-height: 1.1;
+    }
+
+    .flashcard .answer h4 .accent {
+      color: var(--rmm-yellow);
+    }
+
+    .flashcard .answer p {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: var(--rmm-text-dim);
+    }
+
+    .flashcard .hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--rmm-subtle);
+      font-weight: 700;
+    }
+
+    .flashcard .hint svg { width: 14px; height: 14px; }
+
+    /* rating row */
+    .rate-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .rate-btn {
+      padding: 14px 6px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--rmm-border);
+      background: var(--rmm-surface);
+      color: var(--rmm-text-dim);
+      display: grid;
+      gap: 4px;
+      text-align: center;
+      transition: transform 140ms var(--ease-out), background 140ms var(--ease-out), border-color 140ms var(--ease-out), color 140ms var(--ease-out);
+    }
+
+    .rate-btn:active { transform: scale(0.96); }
+
+    .rate-btn .label {
+      font-size: 0.66rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .rate-btn .key {
+      font-size: 0.62rem;
+      color: var(--rmm-subtle);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.08em;
+    }
+
+    .rate-btn[data-rating="again"]:hover { border-color: var(--rmm-error); color: var(--rmm-error); }
+    .rate-btn[data-rating="hard"]:hover  { border-color: var(--rmm-warn); color: var(--rmm-warn); }
+    .rate-btn[data-rating="good"]:hover  { border-color: var(--rmm-yellow); color: var(--rmm-yellow); }
+    .rate-btn[data-rating="easy"]:hover  { border-color: var(--rmm-ok); color: var(--rmm-ok); }
+
+    .rate-row.hidden { opacity: 0.35; pointer-events: none; }
+
+    /* done state */
+    .done-state {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      border: 1px solid var(--rmm-border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(249, 193, 2, 0.05), transparent);
+    }
+
+    .done-state.visible { display: block; }
+
+    .done-state h2 {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.03em;
+      font-size: 2rem;
+      line-height: 0.95;
+      margin: 0 0 10px;
+    }
+
+    .done-state h2 .accent { color: var(--rmm-yellow); }
+
+    .done-state p {
+      color: var(--rmm-muted);
+      font-size: 0.95rem;
+      margin: 0 0 22px;
+    }
+
+    .done-state .btn { padding: 14px 22px; }
+
+    /* swipe affordance hints */
+    .deck.dragging .flashcard[data-pos="0"] { transition: none; cursor: grabbing; }
+
+    .swipe-feedback {
+      position: absolute;
+      top: 22px;
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 160ms var(--ease-out);
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .swipe-feedback.left  { left: 22px;  background: rgba(239, 68, 68, 0.2);  color: var(--rmm-error); }
+    .swipe-feedback.right { right: 22px; background: rgba(34, 197, 94, 0.2);   color: var(--rmm-ok); }
+  </style>
+</head>
+<body>
+  <div class="proto-label"><span class="dot"></span> Redesign · Practice</div>
+
+  <main class="page">
+    <div class="practice">
+      <div class="practice-top">
+        <a class="back" href="./reader.html" aria-label="Voltar">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </a>
+        <div class="progress"><span id="deckProgress"></span></div>
+        <span class="counter"><b id="deckIndex">3</b>/<span id="deckTotal">8</span></span>
+      </div>
+
+      <div class="heading-block">
+        <span class="eyebrow">Prática · Cap. 07</span>
+        <h1>Fixe hoje o que <span class="accent">não quer esquecer.</span></h1>
+        <p>Deslize para direita se foi fácil. Esquerda se escorregou. O algoritmo agenda a próxima revisão pra você.</p>
+      </div>
+
+      <section class="deck" id="deck" aria-live="polite">
+        <span class="swipe-feedback left" id="fbLeft">Revisar</span>
+        <span class="swipe-feedback right" id="fbRight">Fixado</span>
+        <!-- cards rendered by JS -->
+      </section>
+
+      <div class="rate-row" id="rateRow">
+        <button class="rate-btn" data-rating="again">
+          <span class="label">Revisar</span>
+          <span class="key">1</span>
+        </button>
+        <button class="rate-btn" data-rating="hard">
+          <span class="label">Difícil</span>
+          <span class="key">2</span>
+        </button>
+        <button class="rate-btn" data-rating="good">
+          <span class="label">Bom</span>
+          <span class="key">3</span>
+        </button>
+        <button class="rate-btn" data-rating="easy">
+          <span class="label">Fácil</span>
+          <span class="key">4</span>
+        </button>
+      </div>
+
+      <section class="done-state" id="doneState">
+        <h2>Sessão <span class="accent">fechada.</span></h2>
+        <p>8 cards revisados · próxima sessão em 2 dias</p>
+        <a class="btn btn-primary" href="./today.html">Voltar para hoje →</a>
+      </section>
+    </div>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegação">
+    <a href="./today.html" aria-label="Hoje">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9" /><path d="M5 10v10h14V10" /></svg>
+    </a>
+    <a href="./reader.html" aria-label="Ler">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z" /><path d="M20 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z" /></svg>
+    </a>
+    <a href="./practice.html" class="active" aria-label="Praticar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="14" height="16" rx="2" /><path d="M7 5V3h10v16" /></svg>
+    </a>
+    <a href="#" aria-label="Diário">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" /></svg>
+    </a>
+    <a href="#" aria-label="Compartilhar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.6" y1="13.5" x2="15.4" y2="17.5" /><line x1="15.4" y1="6.5" x2="8.6" y2="10.5" /></svg>
+    </a>
+  </nav>
+
+  <script>
+    (function () {
+      var cards = [
+        {
+          tag: 'Princípio',
+          q: 'Qual é o ativo invisível que diferencia marcas em mercados saturados?',
+          a: 'Como você faz as pessoas se sentirem.',
+          exp: 'Produtos se copiam; experiência humana, não. Gentileza consistente reduz atrito e aumenta valor de longo prazo.'
+        },
+        {
+          tag: 'Ferramenta',
+          q: 'Quais são os 3 passos do Ciclo de Interação com Valor?',
+          a: 'Identificar · Personalizar · Registrar.',
+          exp: 'Identifique a última interação protocolar, volte com mensagem personalizada, registre num log e revise toda sexta.'
+        },
+        {
+          tag: 'Aplicação',
+          q: 'O que Gary Vee defende sobre silêncio diante de um cliente frustrado?',
+          a: 'Silêncio também é resposta.',
+          exp: 'Você está sempre comunicando, mesmo quando acha que não está. O não-contato é uma escolha de marca.'
+        },
+        {
+          tag: 'Assimetria',
+          q: 'Por que tratar cada contato como se fosse o maior possível?',
+          a: 'Pela assimetria do payoff.',
+          exp: 'A maioria não vai virar grande. Quando uma vira, paga todos os outros custos — e o custo marginal de cuidar é baixo.'
+        },
+        {
+          tag: 'Escolha',
+          q: 'Segundo o capítulo, a escolha real não é entre eficiência e gentileza. É entre o quê?',
+          a: 'Consistência e oportunismo.',
+          exp: 'Você pode fechar a venda de hoje ou fechar os próximos dez anos. O tempo investido é o mesmo.'
+        },
+        {
+          tag: 'Quote',
+          q: 'Complete: "Cada interação importa. Cada relacionamento ___"',
+          a: 'tem valor.',
+          exp: 'Frase-âncora do capítulo 7. Útil para o Share Studio do dia.'
+        },
+        {
+          tag: 'Métrica',
+          q: 'Qual comportamento medir semanalmente para saber se você está seguindo o ciclo?',
+          a: 'Nº de mensagens personalizadas × nº de contatos no log.',
+          exp: 'Sem número, vira intenção. A revisão de sexta transforma hábito em dado.'
+        },
+        {
+          tag: 'Reflexão',
+          q: 'Qual relação você deixou esfriar que merece um retorno esta semana?',
+          a: 'Você mesmo responde.',
+          exp: 'Este card é aberto — serve como prompt pro seu diário do dia.'
+        }
+      ];
+
+      var state = {
+        index: 0,
+        total: cards.length,
+        flipped: false
+      };
+
+      var deck = document.getElementById('deck');
+      var idxEl = document.getElementById('deckIndex');
+      var totalEl = document.getElementById('deckTotal');
+      var progressEl = document.getElementById('deckProgress');
+      var rateRow = document.getElementById('rateRow');
+      var done = document.getElementById('doneState');
+      var fbLeft = document.getElementById('fbLeft');
+      var fbRight = document.getElementById('fbRight');
+
+      totalEl.textContent = state.total;
+
+      function render() {
+        idxEl.textContent = Math.min(state.total, state.index + 1);
+        progressEl.style.width = Math.round(((state.index) / state.total) * 100) + '%';
+
+        // clear existing
+        deck.querySelectorAll('.flashcard').forEach(function (el) { el.remove(); });
+
+        if (state.index >= state.total) {
+          progressEl.style.width = '100%';
+          rateRow.classList.add('hidden');
+          done.classList.add('visible');
+          return;
+        }
+
+        for (var offset = 3; offset >= 0; offset--) {
+          var i = state.index + offset;
+          if (i >= state.total) continue;
+          var c = cards[i];
+          var el = document.createElement('article');
+          el.className = 'flashcard';
+          el.setAttribute('data-pos', String(offset));
+          el.innerHTML =
+            '<div class="face front">' +
+              '<div class="tag"><span><span class="dot"></span>' + c.tag + '</span><span>Tap para virar</span></div>' +
+              '<div class="question">' + c.q + '</div>' +
+              '<div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M21 7H9a4 4 0 0 0-4 4v3"/><path d="M7 21l-4-4 4-4"/><path d="M3 17h12a4 4 0 0 0 4-4v-3"/></svg>Ou deslize p/ avaliar</div>' +
+            '</div>' +
+            '<div class="face back">' +
+              '<div class="tag"><span><span class="dot"></span>' + c.tag + ' · resposta</span><span>Tap para voltar</span></div>' +
+              '<div class="answer">' +
+                '<h4>' + c.a + '</h4>' +
+                '<p>' + c.exp + '</p>' +
+              '</div>' +
+              '<div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Avalie para registrar</div>' +
+            '</div>';
+          deck.appendChild(el);
+          if (offset === 0) {
+            bindTopCard(el);
+          }
+        }
+      }
+
+      function bindTopCard(el) {
+        var startX = 0, startY = 0, currentX = 0, currentY = 0, dragging = false;
+
+        el.addEventListener('click', function (e) {
+          if (dragging) return;
+          if (Math.abs(currentX) > 6) return;
+          el.classList.toggle('flipped');
+        });
+
+        el.addEventListener('pointerdown', function (e) {
+          dragging = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          currentX = 0;
+          currentY = 0;
+          deck.classList.add('dragging');
+          el.setPointerCapture(e.pointerId);
+        });
+
+        el.addEventListener('pointermove', function (e) {
+          if (!dragging) return;
+          currentX = e.clientX - startX;
+          currentY = e.clientY - startY;
+          var rot = currentX / 18;
+          el.style.transform = 'translate(' + currentX + 'px,' + currentY * 0.3 + 'px) rotate(' + rot + 'deg)';
+          var abs = Math.min(1, Math.abs(currentX) / 120);
+          fbRight.style.opacity = currentX > 20 ? abs : 0;
+          fbLeft.style.opacity = currentX < -20 ? abs : 0;
+        });
+
+        el.addEventListener('pointerup', function () {
+          dragging = false;
+          deck.classList.remove('dragging');
+          fbLeft.style.opacity = 0;
+          fbRight.style.opacity = 0;
+          if (currentX > 120) {
+            commit('easy', 1);
+          } else if (currentX < -120) {
+            commit('again', -1);
+          } else {
+            el.style.transform = '';
+          }
+        });
+
+        el.addEventListener('pointercancel', function () {
+          dragging = false;
+          deck.classList.remove('dragging');
+          fbLeft.style.opacity = 0;
+          fbRight.style.opacity = 0;
+          el.style.transform = '';
+        });
+      }
+
+      function commit(rating, dir) {
+        var top = deck.querySelector('.flashcard[data-pos="0"]');
+        if (!top) return;
+        var x = (dir || 1) * 600;
+        top.style.transition = 'transform 360ms var(--ease-out), opacity 260ms var(--ease-out)';
+        top.style.transform = 'translate(' + x + 'px, -80px) rotate(' + (dir * 18) + 'deg)';
+        top.style.opacity = '0';
+        setTimeout(function () {
+          state.index++;
+          state.flipped = false;
+          render();
+        }, 260);
+      }
+
+      rateRow.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-rating]');
+        if (!btn) return;
+        var map = { again: -1, hard: -1, good: 1, easy: 1 };
+        commit(btn.dataset.rating, map[btn.dataset.rating] || 1);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.target.matches('input, textarea')) return;
+        var map = { '1': 'again', '2': 'hard', '3': 'good', '4': 'easy' };
+        if (map[e.key]) {
+          var m = { again: -1, hard: -1, good: 1, easy: 1 };
+          commit(map[e.key], m[map[e.key]]);
+        }
+        if (e.code === 'Space') {
+          e.preventDefault();
+          var top = deck.querySelector('.flashcard[data-pos="0"]');
+          if (top) top.classList.toggle('flipped');
+        }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
