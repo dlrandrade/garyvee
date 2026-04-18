@@ -44,19 +44,15 @@
     topProgress: byId('topProgress'),
 
     authShell: byId('authShell'),
+    authTitle: byId('authTitle'),
+    authSubtitle: byId('authSubtitle'),
+    authForm: byId('authForm'),
+    authEmail: byId('authEmail'),
+    authPassword: byId('authPassword'),
+    btnAuthSubmit: byId('btnAuthSubmit'),
+    btnAuthToggle: byId('btnAuthToggle'),
+    authSwitchLabel: byId('authSwitchLabel'),
     main: byId('main-content'),
-
-    tabLogin: byId('tabLogin'),
-    tabSignup: byId('tabSignup'),
-    loginPane: byId('loginPane'),
-    signupPane: byId('signupPane'),
-
-    loginForm: byId('loginForm'),
-    signupForm: byId('signupForm'),
-    loginEmail: byId('loginEmail'),
-    loginPassword: byId('loginPassword'),
-    signupEmail: byId('signupEmail'),
-    signupPassword: byId('signupPassword'),
 
     accountName: byId('accountName'),
     accountEmail: byId('accountEmail'),
@@ -335,17 +331,20 @@
     return words.slice(0, targetWords).join(' ').trim();
   }
 
-  function setAuthTab(tab) {
-    const isLogin = tab === 'login';
+  let authMode = 'login';
 
-    el.tabLogin.classList.toggle('active', isLogin);
-    el.tabSignup.classList.toggle('active', !isLogin);
+  function setAuthMode(mode) {
+    authMode = mode === 'signup' ? 'signup' : 'login';
+    const isLogin = authMode === 'login';
 
-    el.tabLogin.setAttribute('aria-selected', String(isLogin));
-    el.tabSignup.setAttribute('aria-selected', String(!isLogin));
-
-    el.loginPane.classList.toggle('is-hidden', !isLogin);
-    el.signupPane.classList.toggle('is-hidden', isLogin);
+    el.authTitle.textContent = isLogin ? 'Entrar' : 'Criar conta';
+    el.authSubtitle.textContent = isLogin
+      ? 'Acesse para sincronizar seu progresso.'
+      : 'Crie uma conta para salvar seu progresso na nuvem.';
+    el.btnAuthSubmit.textContent = isLogin ? 'Entrar' : 'Criar conta';
+    el.authPassword.setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
+    el.authSwitchLabel.textContent = isLogin ? 'Primeira vez?' : 'Já tem conta?';
+    el.btnAuthToggle.textContent = isLogin ? 'Criar conta' : 'Entrar';
   }
 
   function toggleAppShell(isAuthenticated) {
@@ -933,12 +932,12 @@
     const creditText = BOOK_CREDIT;
 
     const minTitle = format === 'feed' ? 42 : 46;
-    const minBody = format === 'feed' ? 28 : 30;
+    const minBody = format === 'feed' ? 42 : 45;
     const minSource = format === 'feed' ? 18 : 20;
     const minCredit = format === 'feed' ? 17 : 18;
 
     let titleSize = format === 'feed' ? 62 : 66;
-    let bodySize = format === 'feed' ? 44 : 48;
+    let bodySize = format === 'feed' ? 66 : 72;
     let sourceSize = format === 'feed' ? 32 : 34;
     let creditSize = format === 'feed' ? 30 : 32;
 
@@ -1521,15 +1520,11 @@
   }
 
   function setupAuthEvents() {
-    el.tabLogin.addEventListener('click', function () {
-      setAuthTab('login');
+    el.btnAuthToggle.addEventListener('click', function () {
+      setAuthMode(authMode === 'login' ? 'signup' : 'login');
     });
 
-    el.tabSignup.addEventListener('click', function () {
-      setAuthTab('signup');
-    });
-
-    el.loginForm.addEventListener('submit', async function (ev) {
+    el.authForm.addEventListener('submit', async function (ev) {
       ev.preventDefault();
 
       if (!cloudEnabled || !supabaseClient) {
@@ -1537,59 +1532,47 @@
         return;
       }
 
-      const email = el.loginEmail.value.trim();
-      const password = el.loginPassword.value;
+      const email = el.authEmail.value.trim();
+      const password = el.authPassword.value;
 
       if (!email || !password) {
         showToast('Preencha e-mail e senha.', 'error');
         return;
       }
 
-      const result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
-      if (result.error) {
-        showToast('Login falhou: ' + result.error.message, 'error');
-        return;
-      }
-
-      showToast('Login realizado com sucesso.', 'success');
-    });
-
-    el.signupForm.addEventListener('submit', async function (ev) {
-      ev.preventDefault();
-
-      if (!cloudEnabled || !supabaseClient) {
-        showToast('Configure o Supabase na Vercel para habilitar cadastro.', 'error');
-        return;
-      }
-
-      const email = el.signupEmail.value.trim();
-      const password = el.signupPassword.value;
-
-      if (!email || !password) {
-        showToast('Preencha e-mail e senha.', 'error');
-        return;
-      }
-
-      if (password.length < 6) {
+      if (authMode === 'signup' && password.length < 6) {
         showToast('Senha precisa ter pelo menos 6 caracteres.', 'error');
         return;
       }
 
-      const result = await supabaseClient.auth.signUp({ email: email, password: password });
-      if (result.error) {
-        showToast('Cadastro falhou: ' + result.error.message, 'error');
-        return;
-      }
+      el.btnAuthSubmit.disabled = true;
 
-      if (result.data && result.data.session) {
-        showToast('Conta criada e autenticada.', 'success');
-      } else {
-        const loginResult = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
-        if (loginResult.error) {
-          showToast('Conta criada. Tente login manual.', 'success');
-        } else {
+      try {
+        if (authMode === 'signup') {
+          const result = await supabaseClient.auth.signUp({ email: email, password: password });
+          if (result.error) {
+            showToast('Cadastro falhou: ' + result.error.message, 'error');
+            return;
+          }
+          if (!result.data || !result.data.session) {
+            const loginResult = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+            if (loginResult.error) {
+              showToast('Conta criada. Confirme o e-mail e entre novamente.', 'success');
+              return;
+            }
+          }
           showToast('Conta criada e autenticada.', 'success');
+          return;
         }
+
+        const result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+        if (result.error) {
+          showToast('Login falhou: ' + result.error.message, 'error');
+          return;
+        }
+        showToast('Login realizado com sucesso.', 'success');
+      } finally {
+        el.btnAuthSubmit.disabled = false;
       }
     });
 
@@ -1598,6 +1581,16 @@
         toggleAppShell(false);
         showToast('Sessao encerrada.', 'success');
         return;
+      }
+
+      try {
+        if (syncTimer) {
+          window.clearTimeout(syncTimer);
+          syncTimer = null;
+        }
+        await persistReaderSnapshot();
+      } catch (error) {
+        console.error(error);
       }
 
       const result = await supabaseClient.auth.signOut();
@@ -1632,7 +1625,7 @@
   async function init() {
     registerServiceWorker();
     setupAuthEvents();
-    setAuthTab('login');
+    setAuthMode('login');
 
     await getRuntimeConfig();
     initSupabase();
