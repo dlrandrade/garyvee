@@ -44,8 +44,10 @@
       --rmm-border: #1e293b;
       --rmm-text: #f8fafc;
       --rmm-muted: #94a3b8;
-      --rmm-orange: #f97316;
-      --rmm-orange-intense: #ea580c;
+      --rmm-yellow: #eab502;
+      --rmm-yellow-intense: #c29300;
+      --rmm-orange: var(--rmm-yellow);
+      --rmm-orange-intense: var(--rmm-yellow-intense);
 
       /* DigitalHub design system — radii (Tailwind scale) */
       --radius-md: 0.375rem;
@@ -82,9 +84,9 @@
       --text: var(--rmm-text);
       --text-dim: #e2e8f0;
       --muted: var(--rmm-muted);
-      --brand: var(--rmm-orange);
-      --brand-2: var(--rmm-orange-intense);
-      --accent: var(--rmm-orange);
+      --brand: var(--rmm-yellow);
+      --brand-2: var(--rmm-yellow-intense);
+      --accent: var(--rmm-yellow);
       --ok: #22c55e;
       --error: #ef4444;
     }
@@ -103,7 +105,7 @@
       font-family: var(--font-ui);
       color: var(--text);
       background:
-        radial-gradient(900px 520px at 12% -10%, rgba(249, 115, 22, 0.26), transparent 62%),
+        radial-gradient(900px 520px at 12% -10%, rgba(234, 181, 2, 0.26), transparent 62%),
         radial-gradient(700px 460px at 90% 0%, rgba(30, 41, 59, 0.5), transparent 58%),
         linear-gradient(155deg, var(--bg) 0%, var(--bg-2) 55%, var(--bg) 100%);
       letter-spacing: 0.01em;
@@ -212,7 +214,7 @@
       align-content: space-between;
       gap: var(--space-5);
       background:
-        radial-gradient(500px 300px at 20% 0%, rgba(249, 115, 22, 0.2), transparent 70%),
+        radial-gradient(500px 300px at 20% 0%, rgba(234, 181, 2, 0.2), transparent 70%),
         linear-gradient(160deg, color-mix(in srgb, var(--panel-solid) 95%, transparent) 0%, color-mix(in srgb, var(--panel-solid) 86%, transparent) 100%);
     }
 
@@ -1116,7 +1118,7 @@
       border-radius: 24px;
       border: 1px solid var(--line);
       background:
-        radial-gradient(360px 180px at 80% 10%, rgba(249, 115, 22, 0.24), transparent 72%),
+        radial-gradient(360px 180px at 80% 10%, rgba(234, 181, 2, 0.24), transparent 72%),
         radial-gradient(360px 190px at 15% 90%, rgba(30, 41, 59, 0.42), transparent 72%),
         linear-gradient(150deg, #020617 0%, color-mix(in srgb, #020617 72%, #0f172a) 56%, #020617 100%);
       box-shadow: var(--shadow-soft);
