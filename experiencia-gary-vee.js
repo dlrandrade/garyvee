@@ -297,10 +297,42 @@
     return APP_DATA.chapters.find((chapter) => chapter.id === id) || APP_DATA.chapters[0];
   }
 
-  function compactText(text, maxLen) {
-    const clean = String(text || '').replace(/\s+/g, ' ').trim();
-    if (clean.length <= maxLen) return clean;
-    return clean.slice(0, Math.max(0, maxLen - 1)).trimEnd() + '…';
+  function compactText(text) {
+    return String(text || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function wordCount(text) {
+    const clean = compactText(text);
+    return clean ? clean.split(' ').length : 0;
+  }
+
+  function compressMeaning(text, targetWords) {
+    const clean = compactText(text);
+    if (!clean) return '';
+
+    const words = clean.split(' ');
+    if (words.length <= targetWords) return clean;
+
+    const sentences = clean.split(/(?<=[.!?])\s+/).filter(Boolean);
+    const out = [];
+    let count = 0;
+
+    for (const sentence of sentences) {
+      const sentenceWords = sentence.trim().split(/\s+/).filter(Boolean);
+      if (!sentenceWords.length) continue;
+
+      if (count + sentenceWords.length <= targetWords || out.length === 0) {
+        out.push(sentence.trim());
+        count += sentenceWords.length;
+      }
+
+      if (count >= targetWords) {
+        break;
+      }
+    }
+
+    if (out.length) return out.join(' ').replace(/\s+/g, ' ').trim();
+    return words.slice(0, targetWords).join(' ').trim();
   }
 
   function setAuthTab(tab) {
@@ -743,19 +775,19 @@
       const steps = Array.isArray(toolkit.how) ? toolkit.how : [];
 
       return {
-        main: compactText(toolkit.name || chapter.title, 120),
+        main: compactText(toolkit.name || chapter.title),
         bodyA: toolkit.formula
-          ? compactText('Formula: ' + toolkit.formula + '. Execute com consistencia e ajuste semanal.', 220)
-          : compactText('Aplique a ferramenta do capitulo agora e transforme teoria em resultado.', 220),
-        bodyB: compactText(steps.slice(0, 2).join(' | ') || chapter.actions[0] || chapter.reflection, 220),
+          ? compressMeaning('Formula: ' + toolkit.formula + '. Execute com consistencia e ajuste semanal.', 20)
+          : compressMeaning('Aplique a ferramenta do capitulo agora e transforme teoria em resultado.', 20),
+        bodyB: compressMeaning(steps.slice(0, 2).join(' | ') || chapter.actions[0] || chapter.reflection, 20),
         footer: sourceLabel
       };
     }
 
     return {
-      main: compactText(chapter.quotePt, 170),
-      bodyA: compactText(chapter.lesson, 230),
-      bodyB: compactText('Acao de hoje: ' + (chapter.actions[0] || chapter.reflection), 220),
+      main: compactText(chapter.quotePt),
+      bodyA: compressMeaning(chapter.lesson, 24),
+      bodyB: compressMeaning('Acao de hoje: ' + (chapter.actions[0] || chapter.reflection), 20),
       footer: sourceLabel
     };
   }
@@ -832,6 +864,14 @@
     return y;
   }
 
+  function drawWithLetterSpacing(ctx, text, x, y, spacing) {
+    let cursor = x;
+    for (const char of String(text || '')) {
+      ctx.fillText(char, cursor, y);
+      cursor += ctx.measureText(char).width + spacing;
+    }
+  }
+
   function postCaption() {
     return [
       String(el.shareMainInput.value || '').trim(),
@@ -865,61 +905,158 @@
     ctx.clearRect(0, 0, width, height);
 
     const bg = ctx.createLinearGradient(0, 0, width, height);
-    bg.addColorStop(0, '#0f1728');
-    bg.addColorStop(0.5, '#162338');
-    bg.addColorStop(1, '#0b1220');
+    bg.addColorStop(0, '#000000');
+    bg.addColorStop(0.48, '#404040');
+    bg.addColorStop(1, '#000000');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, width, height);
 
     const glowA = ctx.createRadialGradient(width * 0.84, height * 0.1, 20, width * 0.84, height * 0.1, 460);
-    glowA.addColorStop(0, 'rgba(109,198,255,0.26)');
-    glowA.addColorStop(1, 'rgba(109,198,255,0)');
+    glowA.addColorStop(0, 'rgba(250,192,0,0.24)');
+    glowA.addColorStop(1, 'rgba(250,192,0,0)');
     ctx.fillStyle = glowA;
     ctx.fillRect(0, 0, width, height);
 
     const glowB = ctx.createRadialGradient(width * 0.12, height * 0.88, 20, width * 0.12, height * 0.88, 520);
-    glowB.addColorStop(0, 'rgba(255,198,127,0.2)');
-    glowB.addColorStop(1, 'rgba(255,198,127,0)');
+    glowB.addColorStop(0, 'rgba(64,64,64,0.38)');
+    glowB.addColorStop(1, 'rgba(64,64,64,0)');
     ctx.fillStyle = glowB;
     ctx.fillRect(0, 0, width, height);
 
     const blockW = Math.round(width * (format === 'feed' ? 0.74 : 0.72));
     const x = Math.round((width - blockW) / 2);
 
-    const titleSize = format === 'feed' ? 62 : 66;
-    const bodySize = format === 'feed' ? 44 : 48;
-    const sourceSize = Math.round(bodySize / 2);
-    const creditSize = Math.max(16, sourceSize - 2);
+    let titleText = compactText(String(el.shareMainInput.value || '').toUpperCase());
+    let bodyAText = compactText(String(el.shareBodyInput.value || ''));
+    let bodyBText = compactText(String(el.shareBodyInputB.value || ''));
+    const sourceText = compactText(String(el.shareTagInput.value || ''));
+    const creditText = BOOK_CREDIT;
 
-    const topMargin = format === 'feed' ? 174 : 236;
-    const gapMainBody = format === 'feed' ? 44 : 58;
-    const gapBodyFooter = format === 'feed' ? 36 : 46;
+    const minTitle = format === 'feed' ? 42 : 46;
+    const minBody = format === 'feed' ? 28 : 30;
+    const minSource = format === 'feed' ? 18 : 20;
+    const minCredit = format === 'feed' ? 17 : 18;
+
+    let titleSize = format === 'feed' ? 62 : 66;
+    let bodySize = format === 'feed' ? 44 : 48;
+    let sourceSize = format === 'feed' ? 32 : 34;
+    let creditSize = format === 'feed' ? 30 : 32;
+
+    const topMargin = format === 'feed' ? 170 : 230;
+    const bottomMargin = format === 'feed' ? 110 : 150;
+    const gapMainBody = format === 'feed' ? 36 : 44;
+    const gapBodies = format === 'feed' ? 22 : 28;
+    const gapBodyFooter = format === 'feed' ? 20 : 24;
+    const gapFooterCredit = 0;
+
+    function layoutHeight() {
+      ctx.font = '800 ' + titleSize + 'px "Inter", sans-serif';
+      const titleLines = wrapText(ctx, titleText, blockW);
+      const titleLH = Math.round(titleSize * 1.18);
+
+      ctx.font = '500 ' + bodySize + 'px "Literature", "Manrope", sans-serif';
+      const bodyALines = wrapText(ctx, bodyAText, blockW);
+      const bodyBLines = wrapText(ctx, bodyBText, blockW);
+      const bodyLH = Math.round(bodySize * 1.2);
+
+      ctx.font = '500 ' + sourceSize + 'px "Literature", "Manrope", sans-serif';
+      const sourceLines = wrapText(ctx, sourceText, blockW);
+      const sourceLH = Math.round(sourceSize * 1.2);
+
+      ctx.font = '500 ' + creditSize + 'px "Literature", "Manrope", sans-serif';
+      const creditLines = wrapText(ctx, creditText, blockW);
+      const creditLH = Math.round(creditSize * 1.2);
+
+      const heightUsed =
+        topMargin +
+        (titleLines.length * titleLH) +
+        gapMainBody +
+        (bodyALines.length * bodyLH) +
+        gapBodies +
+        (bodyBLines.length * bodyLH) +
+        gapBodyFooter +
+        (sourceLines.length * sourceLH) +
+        gapFooterCredit +
+        (creditLines.length * creditLH);
+
+      return {
+        fits: heightUsed <= (height - bottomMargin),
+        titleLines,
+        bodyALines,
+        bodyBLines,
+        sourceLines,
+        creditLines,
+        titleLH,
+        bodyLH,
+        sourceLH,
+        creditLH
+      };
+    }
+
+    let layout = layoutHeight();
+    let guard = 0;
+
+    while (!layout.fits && guard < 140) {
+      guard += 1;
+
+      if (titleSize > minTitle) titleSize -= 1;
+      if (bodySize > minBody) bodySize -= 1;
+      if (sourceSize > minSource) sourceSize -= 1;
+      if (creditSize > minCredit) creditSize -= 1;
+
+      layout = layoutHeight();
+
+      if (!layout.fits && titleSize === minTitle && bodySize === minBody) {
+        if (wordCount(bodyAText) > 20) {
+          bodyAText = compressMeaning(bodyAText, Math.max(18, wordCount(bodyAText) - 5));
+        }
+        if (wordCount(bodyBText) > 16) {
+          bodyBText = compressMeaning(bodyBText, Math.max(14, wordCount(bodyBText) - 4));
+        }
+        layout = layoutHeight();
+      }
+    }
 
     let y = topMargin;
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '800 ' + titleSize + 'px "Inter", sans-serif';
-    y = drawParagraph(ctx, String(el.shareMainInput.value || '').toUpperCase(), x, y, blockW, titleSize - 1);
+    layout.titleLines.forEach(function (line) {
+      drawWithLetterSpacing(ctx, line, x, y, -1);
+      y += layout.titleLH;
+    });
 
     y += gapMainBody;
 
-    ctx.fillStyle = '#e9f0fb';
+    ctx.fillStyle = '#ffffff';
     ctx.font = '500 ' + bodySize + 'px "Literature", "Manrope", sans-serif';
-    y = drawParagraph(ctx, String(el.shareBodyInput.value || ''), x, y, blockW, bodySize - 1);
+    layout.bodyALines.forEach(function (line) {
+      ctx.fillText(line, x, y);
+      y += layout.bodyLH;
+    });
 
-    y += (format === 'feed' ? 26 : 32);
-    y = drawParagraph(ctx, String(el.shareBodyInputB.value || ''), x, y, blockW, bodySize - 1);
+    y += gapBodies;
+    layout.bodyBLines.forEach(function (line) {
+      ctx.fillText(line, x, y);
+      y += layout.bodyLH;
+    });
 
     y += gapBodyFooter;
 
-    ctx.fillStyle = '#bfd0ea';
-    ctx.font = '500 ' + sourceSize + 'px "Literature", "Manrope", sans-serif';
-    y = drawParagraph(ctx, String(el.shareTagInput.value || ''), x, y, blockW, sourceSize - 1);
+    ctx.fillStyle = '#fac000';
+    ctx.font = '600 ' + sourceSize + 'px "Literature", "Manrope", sans-serif';
+    layout.sourceLines.forEach(function (line) {
+      ctx.fillText(line, x, y);
+      y += layout.sourceLH;
+    });
 
-    y += 8;
-    ctx.fillStyle = 'rgba(191,208,234,0.88)';
+    y += gapFooterCredit;
+    ctx.fillStyle = 'rgba(250,192,0,0.9)';
     ctx.font = '500 ' + creditSize + 'px "Literature", "Manrope", sans-serif';
-    drawParagraph(ctx, BOOK_CREDIT, x, y, blockW, creditSize - 1);
+    layout.creditLines.forEach(function (line) {
+      ctx.fillText(line, x, y);
+      y += layout.creditLH;
+    });
 
     const link = document.createElement('a');
     link.download = 'gary-vee-capitulo-' + chapterId + '-' + variant + '-' + format + '.png';
@@ -986,8 +1123,8 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    bg.addColorStop(0, '#0f1728');
-    bg.addColorStop(1, '#09111e');
+    bg.addColorStop(0, '#000000');
+    bg.addColorStop(1, '#404040');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -997,7 +1134,7 @@
     ctx.font = '700 58px "Inter", sans-serif';
     ctx.fillText('Meu progresso de leitura Gary Vee', 86, 130);
 
-    ctx.fillStyle = '#bed0eb';
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
     ctx.font = '500 36px "Inter", sans-serif';
     ctx.fillText(userName + ' • desafio 30 em 30', 86, 185);
 
@@ -1014,12 +1151,12 @@
       const x = 86 + col * 460;
       const y = 250 + row * 210;
 
-      ctx.fillStyle = 'rgba(21,36,58,0.84)';
-      ctx.strokeStyle = 'rgba(160,188,232,0.35)';
+      ctx.fillStyle = 'rgba(64,64,64,0.72)';
+      ctx.strokeStyle = 'rgba(250,192,0,0.38)';
       ctx.lineWidth = 2;
       roundRect(ctx, x, y, 390, 170, 22, true, true);
 
-      ctx.fillStyle = '#9cb5db';
+      ctx.fillStyle = '#fac000';
       ctx.font = '600 24px "Inter", sans-serif';
       ctx.fillText(card.label.toUpperCase(), x + 28, y + 52);
 
@@ -1038,20 +1175,20 @@
 
     const progressW = Math.round((percent / 100) * barW);
     const grad = ctx.createLinearGradient(barX, barY, barX + progressW, barY + barH);
-    grad.addColorStop(0, '#6dc6ff');
-    grad.addColorStop(1, '#70e8b6');
+    grad.addColorStop(0, '#fac000');
+    grad.addColorStop(1, '#404040');
     ctx.fillStyle = grad;
     roundRect(ctx, barX, barY, progressW, barH, 999, true, false);
 
-    ctx.fillStyle = '#e3eefc';
+    ctx.fillStyle = '#ffffff';
     ctx.font = '600 30px "Inter", sans-serif';
     ctx.fillText('Consistencia > motivacao. Um capitulo por dia.', 86, 790);
 
-    ctx.fillStyle = '#bfd2ed';
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
     ctx.font = '500 28px "Inter", sans-serif';
     ctx.fillText('Entre na plataforma e acompanhe seu avanço com gamificacao.', 86, 840);
 
-    ctx.fillStyle = '#9db8dd';
+    ctx.fillStyle = '#fac000';
     ctx.font = '500 24px "Inter", sans-serif';
     ctx.fillText('gary vee learning experience', 86, 1240);
 

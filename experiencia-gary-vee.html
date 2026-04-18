@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0e1723" />
+  <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="GaryVee Reader" />
@@ -17,7 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Boldonse&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -27,7 +27,7 @@
       --safe-left: env(safe-area-inset-left, 0px);
 
       --font-ui: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-display: 'Sora', 'Manrope', sans-serif;
+      --font-display: 'Boldonse', 'Manrope', sans-serif;
       --font-quote: 'Cormorant Garamond', serif;
       --font-story-title: 'Inter', 'Classic', sans-serif;
       --font-story-body: 'Literature', 'Manrope', sans-serif;
@@ -46,19 +46,19 @@
       --shadow-strong: 0 22px 48px rgba(0, 0, 0, 0.28);
       --container: min(1240px, 94vw);
 
-      --bg: #0e1723;
-      --bg-2: #1b2a3c;
-      --panel: rgba(26, 39, 56, 0.84);
-      --panel-solid: #1f3247;
-      --line: rgba(232, 187, 120, 0.28);
-      --text: #f7efdf;
-      --text-dim: #dfcfb2;
-      --muted: #c8ad82;
-      --brand: #d89a3f;
-      --brand-2: #70aeb9;
-      --accent: #efc47a;
-      --ok: #85d89d;
-      --error: #ff9f98;
+      --bg: #000000;
+      --bg-2: #404040;
+      --panel: rgba(64, 64, 64, 0.36);
+      --panel-solid: #404040;
+      --line: rgba(250, 192, 0, 0.34);
+      --text: #ffffff;
+      --text-dim: rgba(255, 255, 255, 0.9);
+      --muted: rgba(255, 255, 255, 0.66);
+      --brand: #fac000;
+      --brand-2: #404040;
+      --accent: #fac000;
+      --ok: #fac000;
+      --error: #fac000;
     }
 
     * {
@@ -75,8 +75,8 @@
       font-family: var(--font-ui);
       color: var(--text);
       background:
-        radial-gradient(900px 520px at 12% -10%, rgba(216, 154, 63, 0.24), transparent 62%),
-        radial-gradient(700px 460px at 90% 0%, rgba(112, 174, 185, 0.22), transparent 58%),
+        radial-gradient(900px 520px at 12% -10%, rgba(250, 192, 0, 0.22), transparent 62%),
+        radial-gradient(700px 460px at 90% 0%, rgba(64, 64, 64, 0.34), transparent 58%),
         linear-gradient(155deg, var(--bg) 0%, var(--bg-2) 55%, var(--bg) 100%);
       letter-spacing: 0.01em;
     }
@@ -184,7 +184,7 @@
       align-content: space-between;
       gap: var(--space-5);
       background:
-        radial-gradient(500px 300px at 20% 0%, rgba(109, 198, 255, 0.18), transparent 70%),
+        radial-gradient(500px 300px at 20% 0%, rgba(250, 192, 0, 0.2), transparent 70%),
         linear-gradient(160deg, color-mix(in srgb, var(--panel-solid) 95%, transparent) 0%, color-mix(in srgb, var(--panel-solid) 86%, transparent) 100%);
     }
 
@@ -299,8 +299,8 @@
     }
 
     .tab-btn.active {
-      background: linear-gradient(130deg, color-mix(in srgb, var(--brand) 72%, #fff), color-mix(in srgb, var(--accent) 55%, #fff));
-      color: #0b1628;
+      background: linear-gradient(130deg, var(--brand), color-mix(in srgb, var(--brand) 50%, var(--brand-2)));
+      color: var(--bg);
     }
 
     .auth-form {
@@ -370,8 +370,8 @@
     }
 
     .btn-primary {
-      background: linear-gradient(140deg, color-mix(in srgb, var(--brand) 72%, #fff), color-mix(in srgb, var(--brand-2) 60%, #fff));
-      color: #041428;
+      background: linear-gradient(140deg, var(--brand), color-mix(in srgb, var(--brand) 55%, var(--brand-2)));
+      color: var(--bg);
       border-color: color-mix(in srgb, var(--brand) 38%, transparent);
     }
 
@@ -404,6 +404,7 @@
     }
 
     .brand strong {
+      font-family: var(--font-display);
       font-size: 1.16rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -603,14 +604,14 @@
     .book-pages {
       inset: 8px -10px 8px 100%;
       width: 16px;
-      background: linear-gradient(180deg, #f2f2f2 0%, #e2e2e2 100%);
+      background: linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, #ffffff 76%, #404040) 100%);
       transform: translateZ(-2px);
     }
 
     .book-spine {
       inset: 6px auto 6px -14px;
       width: 14px;
-      background: linear-gradient(180deg, #101b2f 0%, #0a1222 100%);
+      background: linear-gradient(180deg, #404040 0%, #000000 100%);
       border-radius: 5px 0 0 5px;
       transform: rotateY(90deg);
       transform-origin: right;
@@ -675,8 +676,8 @@
     }
 
     .chip.active {
-      color: #06203b;
-      background: linear-gradient(120deg, color-mix(in srgb, var(--brand) 72%, #fff), color-mix(in srgb, var(--brand-2) 60%, #fff));
+      color: var(--bg);
+      background: linear-gradient(120deg, var(--brand), color-mix(in srgb, var(--brand) 56%, var(--brand-2)));
     }
 
     .chapter-list {
@@ -687,7 +688,15 @@
       gap: 8px;
       max-height: 62vh;
       overflow: auto;
-      padding-right: 3px;
+      padding-right: 0;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .chapter-list::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
     }
 
     .chapter-link {
@@ -868,8 +877,8 @@
       border-radius: 50%;
       font-weight: 800;
       font-size: 0.83rem;
-      color: #072138;
-      background: linear-gradient(140deg, color-mix(in srgb, var(--brand) 70%, #fff), color-mix(in srgb, var(--brand-2) 60%, #fff));
+      color: var(--bg);
+      background: linear-gradient(140deg, var(--brand), color-mix(in srgb, var(--brand) 54%, var(--brand-2)));
     }
 
     .reflection,
@@ -1049,9 +1058,9 @@
     }
 
     .badge.unlocked {
-      color: #05243f;
+      color: var(--bg);
       border-color: color-mix(in srgb, var(--brand) 50%, transparent);
-      background: linear-gradient(130deg, color-mix(in srgb, var(--brand) 70%, #fff), color-mix(in srgb, var(--brand-2) 62%, #fff));
+      background: linear-gradient(130deg, var(--brand), color-mix(in srgb, var(--brand) 52%, var(--brand-2)));
       font-weight: 700;
     }
 
@@ -1079,9 +1088,9 @@
       border-radius: 24px;
       border: 1px solid var(--line);
       background:
-        radial-gradient(360px 180px at 80% 10%, rgba(109, 198, 255, 0.22), transparent 72%),
-        radial-gradient(360px 190px at 15% 90%, rgba(255, 198, 127, 0.2), transparent 72%),
-        linear-gradient(150deg, #0e1420 0%, #111a2a 56%, #0d1320 100%);
+        radial-gradient(360px 180px at 80% 10%, rgba(250, 192, 0, 0.24), transparent 72%),
+        radial-gradient(360px 190px at 15% 90%, rgba(64, 64, 64, 0.34), transparent 72%),
+        linear-gradient(150deg, #000000 0%, color-mix(in srgb, #000000 62%, #404040) 56%, #000000 100%);
       box-shadow: var(--shadow-soft);
       aspect-ratio: 9 / 16;
       display: grid;
@@ -1107,8 +1116,8 @@
     .story-body,
     .story-footer {
       margin: 0;
-      color: #f8fbff;
-      line-height: calc(1em - 1px);
+      color: #ffffff;
+      line-height: normal;
     }
 
     .story-main {
@@ -1116,24 +1125,25 @@
       font-size: clamp(1.45rem, 2.4vw, 2.1rem);
       text-transform: uppercase;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      letter-spacing: -1px;
     }
 
     .story-body,
     .story-footer {
       font-family: var(--font-story-body);
       font-size: clamp(0.82rem, 1.2vw, 1.03rem);
-      color: color-mix(in srgb, #e5eefc 92%, transparent);
+      color: color-mix(in srgb, #ffffff 92%, transparent);
     }
 
     .story-footer {
-      font-size: clamp(0.41rem, 0.6vw, 0.52rem);
-      color: color-mix(in srgb, #c9d7ed 88%, transparent);
+      font-size: clamp(0.76rem, 0.96vw, 0.9rem);
+      color: color-mix(in srgb, #ffffff 88%, transparent);
       letter-spacing: 0.02em;
     }
 
     .story-footer-book {
-      margin-top: -8px;
+      margin-top: -18px;
+      font-size: clamp(0.76rem, 0.96vw, 0.9rem);
       opacity: 0.9;
     }
 

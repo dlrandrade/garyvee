@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gary-vee-reader-v1';
+const CACHE_NAME = 'gary-vee-reader-v2';
 const CORE_ASSETS = [
   '/',
   '/index.html',
