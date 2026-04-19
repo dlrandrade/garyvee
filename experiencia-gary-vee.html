@@ -69,16 +69,20 @@
       --lh-ui: 1.25;
       --lh-body: 1.7;
 
-      /* Documento — paper palette (light theme) */
-      --rmm-bg: #F5F1E8;            /* paper cream */
-      --rmm-surface: #EBE6D9;       /* slightly darker cream, cards */
-      --rmm-surface-2: #E2DCCC;     /* pressed / raised surface */
-      --rmm-surface-3: #D4CDB9;     /* deeper paper */
-      --rmm-border: #D4CDB9;        /* hairline on paper */
-      --rmm-text: #1A1714;          /* ink */
-      --rmm-muted: #6B6258;         /* warm gray for meta */
-      --rmm-yellow: #7A1F1F;        /* oxblood accent (kept token name for compat) */
-      --rmm-yellow-intense: #5C1818; /* deeper oxblood */
+      /* Solar palette — bright yellow field + graphite type */
+      --rmm-bg: #FFCB03;            /* app bg — saturated primary yellow */
+      --rmm-bg-2: #FFD733;          /* lighter tonal step for gradient */
+      --rmm-bg-3: #F5B800;          /* deeper tonal step for gradient */
+      --rmm-surface: #FFE680;       /* soft yellow surface for cards over bg */
+      --rmm-surface-2: #FFF3B8;     /* raised surface / panel */
+      --rmm-surface-3: #E8B800;     /* deeper surface / divider */
+      --rmm-paper: #FDFBF3;         /* near-white used for post canvas + contrast panels */
+      --rmm-border: #E8B800;        /* hairline on yellow */
+      --rmm-text: #404040;          /* graphite — main type on yellow */
+      --rmm-text-strong: #1A1A1A;   /* darker emphasis */
+      --rmm-muted: #6A6A6A;         /* muted meta */
+      --rmm-yellow: #FAC102;        /* active/highlight amber */
+      --rmm-yellow-intense: #E8A900; /* pressed active */
       --rmm-orange: var(--rmm-yellow);
       --rmm-orange-intense: var(--rmm-yellow-intense);
 
@@ -110,18 +114,21 @@
       --container: min(1240px, 94vw);
 
       --bg: var(--rmm-bg);
-      --bg-2: var(--rmm-surface);
-      --panel: color-mix(in srgb, var(--rmm-surface) 92%, transparent);
+      --bg-2: var(--rmm-bg-2);
+      --bg-3: var(--rmm-bg-3);
+      --panel: color-mix(in srgb, var(--rmm-surface) 94%, transparent);
       --panel-solid: var(--rmm-surface);
+      --panel-raised: var(--rmm-surface-2);
       --line: var(--rmm-border);
       --text: var(--rmm-text);
-      --text-dim: #3A3430;
+      --text-strong: var(--rmm-text-strong);
+      --text-dim: #404040;
       --muted: var(--rmm-muted);
       --brand: var(--rmm-yellow);
       --brand-2: var(--rmm-yellow-intense);
-      --accent: var(--rmm-yellow);
+      --accent: var(--rmm-text);
       --ok: #2F7A3D;
-      --error: #7A1F1F;
+      --error: #A33030;
     }
 
     * {
@@ -138,9 +145,9 @@
       font-family: var(--font-ui);
       color: var(--text);
       background:
-        radial-gradient(900px 520px at 12% -10%, rgba(122, 31, 31, 0.06), transparent 62%),
-        radial-gradient(700px 460px at 90% 0%, rgba(26, 23, 20, 0.04), transparent 58%),
-        linear-gradient(155deg, var(--bg) 0%, var(--bg-2) 55%, var(--bg) 100%);
+        radial-gradient(900px 520px at 12% -10%, rgba(255, 245, 170, 0.9), transparent 62%),
+        radial-gradient(700px 460px at 90% 0%, rgba(245, 184, 0, 0.55), transparent 58%),
+        linear-gradient(155deg, var(--bg-2) 0%, var(--bg) 55%, var(--bg-3) 100%);
       letter-spacing: var(--ls-normal);
     }
 
@@ -184,8 +191,8 @@
       inset: 0;
       pointer-events: none;
       z-index: 1;
-      opacity: 0.05;
-      background-image: radial-gradient(circle at 1px 1px, #1A1714 1px, transparent 0);
+      opacity: 0.06;
+      background-image: radial-gradient(circle at 1px 1px, #404040 1px, transparent 0);
       background-size: 4px 4px;
     }
 
@@ -207,6 +214,28 @@
     .is-hidden {
       display: none !important;
     }
+
+    .app-footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 24px 16px calc(var(--safe-bottom) + 16px);
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .app-footer p { margin: 0; }
+
+    .app-footer a {
+      color: var(--text-strong);
+      font-weight: 700;
+      border-bottom: 2px solid var(--brand);
+      padding-bottom: 1px;
+      text-decoration: none;
+    }
+
+    .app-footer a:hover { color: var(--brand-2); }
 
     .visually-hidden {
       position: absolute;
@@ -284,14 +313,19 @@
       display: inline-flex;
       align-items: center;
       width: fit-content;
-      border: 1px solid color-mix(in srgb, var(--brand) 55%, transparent);
-      color: color-mix(in srgb, var(--brand) 70%, var(--text));
+      border: 1px solid color-mix(in srgb, var(--brand) 70%, transparent);
+      background: color-mix(in srgb, var(--brand) 32%, transparent);
+      color: var(--text);
       border-radius: 999px;
       padding: 6px 12px;
       font-size: 0.76rem;
       letter-spacing: 0.09em;
       text-transform: uppercase;
       font-weight: 700;
+    }
+
+    .auth-headline .eyebrow {
+      justify-self: center;
     }
 
     .auth-headline h1,
@@ -315,7 +349,7 @@
     .auth-headline h1 .accent,
     .hero-card h2 .accent,
     .headline .accent {
-      color: var(--brand);
+      color: var(--accent);
     }
 
     .auth-headline h1 .mute,
@@ -346,8 +380,9 @@
     .auth-switch button {
       background: none;
       border: 0;
-      padding: 0;
-      color: var(--brand);
+      padding: 0 0 1px;
+      color: var(--text-strong);
+      border-bottom: 2px solid var(--brand);
       font: inherit;
       font-weight: 700;
       cursor: pointer;
@@ -421,9 +456,14 @@
     }
 
     .btn-primary {
-      background: linear-gradient(140deg, var(--brand), color-mix(in srgb, var(--brand) 55%, var(--brand-2)));
-      color: var(--bg);
-      border-color: color-mix(in srgb, var(--brand) 38%, transparent);
+      background: linear-gradient(140deg, var(--brand), var(--brand-2));
+      color: var(--text-strong);
+      border-color: color-mix(in srgb, var(--brand-2) 60%, transparent);
+      box-shadow: 0 6px 20px -8px rgba(250, 193, 2, 0.6);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.04);
     }
 
     .btn-ghost {
@@ -527,6 +567,39 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: 6px;
+    }
+
+    .account-field-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+
+    .account-field {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel-solid) 90%, transparent);
+      color: var(--text-strong);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .account-field:focus {
+      outline: 2px solid color-mix(in srgb, var(--brand) 70%, transparent);
+      outline-offset: 1px;
+    }
+
+    .account-save-hint {
+      font-size: 0.7rem;
+      color: var(--ok);
+      margin-top: 4px;
+      min-height: 1em;
     }
 
     .btn-mini {
@@ -1013,10 +1086,22 @@
       display: grid;
       align-content: space-between;
       gap: 8px;
+      transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
     }
 
     .flash-back {
       transform: rotateY(180deg);
+      background: var(--brand);
+      border-color: var(--brand-2);
+      box-shadow: 0 10px 28px -14px rgba(232, 169, 0, 0.6);
+    }
+
+    .flash-back .flash-label {
+      color: color-mix(in srgb, var(--text-strong) 75%, transparent);
+    }
+
+    .flash-back .flash-text {
+      color: var(--text-strong);
     }
 
     .flash-label {
@@ -1429,8 +1514,10 @@
           </button>
           <div class="account-menu is-hidden" id="accountMenu" role="menu">
             <div class="account-meta">
-              <span class="account-name" id="accountName">Usuário</span>
+              <label class="account-field-label" for="accountFirstName">Primeiro nome</label>
+              <input class="account-field" id="accountFirstName" type="text" autocomplete="given-name" placeholder="Como podemos te chamar" />
               <span class="account-email" id="accountEmail">email@dominio.com</span>
+              <span class="account-save-hint" id="accountSaveHint" aria-live="polite"></span>
             </div>
             <button class="btn btn-ghost btn-mini" id="btnSignOut" type="button">Sair</button>
           </div>
@@ -1670,6 +1757,13 @@
     <button class="btn btn-primary" id="btnDoneMobile" type="button" aria-label="Concluir capítulo">Concluir</button>
     <button class="btn" id="btnNextMobile" type="button" aria-label="Próximo capítulo">Próximo</button>
   </div>
+
+  <footer class="app-footer">
+    <p>
+      Este projeto foi criado com Claude por
+      <a href="https://instagram.com/DanielLuzz" target="_blank" rel="noopener noreferrer">@DanielLuzz</a>
+    </p>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./experiencia-gary-vee.data.js"></script>
