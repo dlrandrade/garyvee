@@ -1072,9 +1072,8 @@
     const gapTitle     = 52;
     const gapBody      = 36;
     const gapAction    = 40;
-    const gapFooter    = 40;
 
-    const titleLH  = Math.round(titleSize  * 1.0);  // line-height 1
+    const titleLH  = Math.round(titleSize  * 1.0);
     const bodyLH   = Math.round(bodySize   * 1.35);
     const actionLH = Math.round(actionSize * 1.4);
     const footerLH = Math.round(footerSize * 1.4);
