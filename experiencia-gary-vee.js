@@ -6,7 +6,7 @@
   }
 
   const STORAGE_KEY = 'gary_vee_game_reader_v5';
-  const BOOK_CREDIT = '30 lições que aprendi... por @DanielLuzz';
+  const BOOK_CREDIT = 'Livro: 30 Lições que Aprendi Lendo Gary Vee por @DanielLuzz';
   const FONT_DISPLAY = '"Fraunces", "Times New Roman", Georgia, serif';
   const FONT_PROSE = '"Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
   const INK = '#1A1A1A';
@@ -910,7 +910,7 @@
   }
 
   function shareTemplateFor(chapter, variant) {
-    const sourceLabel = 'Fonte Gary Vee: ' + String(chapter.source || '').replace('Obra relacionada: ', '').trim();
+    const sourceLabel = 'Fonte: Gary Vee: ' + String(chapter.source || '').replace('Obra relacionada: ', '').trim();
 
     if (variant === 'tool') {
       const toolkit = chapter.toolkit || { name: 'Ferramenta', formula: '', how: [] };
@@ -1169,7 +1169,7 @@
       ctx.font = bodyFont;
       const bodyLines = wrapText(ctx, bodyAText, blockW);
       bodyLines.forEach(function (line) {
-        ctx.fillText(line, x, y);
+        drawWithLetterSpacing(ctx, line, x, y, -1);
         y += bodyLH;
       });
     }
