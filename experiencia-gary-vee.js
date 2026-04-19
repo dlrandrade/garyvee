@@ -710,6 +710,12 @@
       .upsert(payload, { onConflict: 'user_id' });
 
     if (result.error) {
+      if (result.error.code === '42501') {
+        cloudEnabled = false;
+        console.warn('RLS não configurada — sincronização desativada. Execute o schema no Supabase SQL Editor.');
+        showToast('Execute o schema SQL no Supabase para ativar a sincronização.', 'error');
+        return;
+      }
       throw result.error;
     }
 
