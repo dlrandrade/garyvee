@@ -146,6 +146,9 @@
     btnDownloadPost: byId('btnDownloadPost'),
     btnCopyCaption: byId('btnCopyCaption'),
     btnDailyShare: byId('btnDailyShare'),
+    btnShareX: byId('btnShareX'),
+    btnShareFacebook: byId('btnShareFacebook'),
+    btnShareCopy: byId('btnShareCopy'),
     btnExportProgress: byId('btnExportProgress'),
     btnCopyProgress: byId('btnCopyProgress'),
 
@@ -559,6 +562,7 @@
     }
 
     await hydrateCloudState();
+    autoAdvanceToNextUnread();
     renderAll();
 
     showToast('Sessao ativa para ' + (user.email || 'usuario') + '.', 'success');
@@ -784,7 +788,11 @@
       const li = document.createElement('li');
       const link = document.createElement('a');
       link.href = '#';
-      link.className = 'chapter-link' + (chapter.id === selectedChapterId ? ' active' : '');
+      const isDone = !!state.done[chapter.id];
+      const isActive = chapter.id === selectedChapterId;
+      link.className = 'chapter-link' +
+        (isActive ? ' active' : '') +
+        (isDone && !isActive ? ' done-chapter' : '');
 
       link.innerHTML =
         '<div class="link-topline"><span>Cap ' +
@@ -928,11 +936,24 @@
     const format = el.shareFormatSelect.value;
     el.storyFrame.dataset.format = format;
 
-    el.storyMain.textContent = String(el.shareMainInput.value || '').trim();
+    el.storyMain.textContent = String(el.shareMainInput.value || '').trim().toUpperCase();
     el.storyBodyA.textContent = String(el.shareBodyInput.value || '').trim();
-    el.storyBodyB.textContent = String(el.shareBodyInputB.value || '').trim();
+
+    const actionText = String(el.shareBodyInputB.value || '').trim();
+    el.storyBodyB.innerHTML = actionText
+      ? '<strong>Ação de hoje:</strong> ' + escapeHtml(actionText)
+      : '';
+
     el.storyFooter.textContent = String(el.shareTagInput.value || '').trim();
     el.storyFooterBook.textContent = BOOK_CREDIT;
+  }
+
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function wrapText(ctx, text, maxWidth) {
@@ -1022,139 +1043,97 @@
     ctx.fillStyle = glowB;
     ctx.fillRect(0, 0, width, height);
 
-    const blockW = Math.round(width * (format === 'feed' ? 0.74 : 0.72));
+    const blockW = Math.round(width * (format === 'feed' ? 0.76 : 0.74));
     const x = Math.round((width - blockW) / 2);
 
-    let titleText = compactText(String(el.shareMainInput.value || '').toUpperCase());
-    let bodyAText = compactText(String(el.shareBodyInput.value || ''));
-    let bodyBText = compactText(String(el.shareBodyInputB.value || ''));
-    const sourceText = compactText(String(el.shareTagInput.value || ''));
+    // Fixed type spec (per design brief):
+    //   Title  — Inter 700 60px uppercase, letter-spacing -25 (≈ -1.5px/char in canvas)
+    //   Body   — Inter 400 48px
+    //   Action — Inter 36px, "AÇÃO DE HOJE:" 700 + text 400
+    //   Footer — Inter 400 20px
+    const titleSize  = 60;
+    const bodySize   = 48;
+    const actionSize = 36;
+    const footerSize = 20;
+
+    const titleFont  = '700 ' + titleSize  + 'px ' + FONT_PROSE;
+    const bodyFont   = '400 ' + bodySize   + 'px ' + FONT_PROSE;
+    const actionBoldFont  = '700 ' + actionSize + 'px ' + FONT_PROSE;
+    const actionFont = '400 ' + actionSize + 'px ' + FONT_PROSE;
+    const footerFont = '400 ' + footerSize + 'px ' + FONT_PROSE;
+
+    const titleText  = compactText(String(el.shareMainInput.value || '').toUpperCase());
+    const bodyAText  = compactText(String(el.shareBodyInput.value || ''));
+    const actionText = compactText(String(el.shareBodyInputB.value || ''));
+    const footerText = compactText(String(el.shareTagInput.value || ''));
     const creditText = BOOK_CREDIT;
 
-    const minTitle = format === 'feed' ? 42 : 46;
-    const minBody = format === 'feed' ? 63 : 68;
-    const minSource = format === 'feed' ? 18 : 20;
-    const minCredit = format === 'feed' ? 17 : 18;
+    const topMargin    = format === 'feed' ? 180 : 240;
+    const gapTitle     = 52;
+    const gapBody      = 36;
+    const gapAction    = 40;
 
-    let titleSize = format === 'feed' ? 62 : 66;
-    let bodySize = format === 'feed' ? 99 : 108;
-    let sourceSize = format === 'feed' ? 32 : 34;
-    let creditSize = format === 'feed' ? 30 : 32;
-
-    const topMargin = format === 'feed' ? 170 : 230;
-    const bottomMargin = format === 'feed' ? 110 : 150;
-    const gapMainBody = format === 'feed' ? 36 : 44;
-    const gapBodies = format === 'feed' ? 22 : 28;
-    const gapBodyFooter = format === 'feed' ? 20 : 24;
-    const gapFooterCredit = 0;
-
-    function layoutHeight() {
-      ctx.font = '800 ' + titleSize + 'px ' + FONT_DISPLAY;
-      const titleLines = wrapText(ctx, titleText, blockW);
-      const titleLH = Math.round(titleSize * 1.18);
-
-      ctx.font = '500 ' + bodySize + 'px ' + FONT_PROSE;
-      const bodyALines = wrapText(ctx, bodyAText, blockW);
-      const bodyBLines = wrapText(ctx, bodyBText, blockW);
-      const bodyLH = Math.round(bodySize * 1.2);
-
-      ctx.font = '600 ' + sourceSize + 'px ' + FONT_PROSE;
-      const sourceLines = wrapText(ctx, sourceText, blockW);
-      const sourceLH = Math.round(sourceSize * 1.25);
-
-      ctx.font = '500 ' + creditSize + 'px ' + FONT_PROSE;
-      const creditLines = wrapText(ctx, creditText, blockW);
-      const creditLH = Math.round(creditSize * 1.25);
-
-      const heightUsed =
-        topMargin +
-        (titleLines.length * titleLH) +
-        gapMainBody +
-        (bodyALines.length * bodyLH) +
-        gapBodies +
-        (bodyBLines.length * bodyLH) +
-        gapBodyFooter +
-        (sourceLines.length * sourceLH) +
-        gapFooterCredit +
-        (creditLines.length * creditLH);
-
-      return {
-        fits: heightUsed <= (height - bottomMargin),
-        titleLines,
-        bodyALines,
-        bodyBLines,
-        sourceLines,
-        creditLines,
-        titleLH,
-        bodyLH,
-        sourceLH,
-        creditLH
-      };
-    }
-
-    let layout = layoutHeight();
-    let guard = 0;
-
-    while (!layout.fits && guard < 140) {
-      guard += 1;
-
-      if (titleSize > minTitle) titleSize -= 1;
-      if (bodySize > minBody) bodySize -= 1;
-      if (sourceSize > minSource) sourceSize -= 1;
-      if (creditSize > minCredit) creditSize -= 1;
-
-      layout = layoutHeight();
-
-      if (!layout.fits && titleSize === minTitle && bodySize === minBody) {
-        if (wordCount(bodyAText) > 20) {
-          bodyAText = compressMeaning(bodyAText, Math.max(18, wordCount(bodyAText) - 5));
-        }
-        if (wordCount(bodyBText) > 16) {
-          bodyBText = compressMeaning(bodyBText, Math.max(14, wordCount(bodyBText) - 4));
-        }
-        layout = layoutHeight();
-      }
-    }
+    const titleLH  = Math.round(titleSize  * 1.0);
+    const bodyLH   = Math.round(bodySize   * 1.35);
+    const actionLH = Math.round(actionSize * 1.4);
+    const footerLH = Math.round(footerSize * 1.4);
 
     let y = topMargin;
 
+    // — Title —
     ctx.fillStyle = INK;
-    ctx.font = '800 ' + titleSize + 'px ' + FONT_DISPLAY;
-    layout.titleLines.forEach(function (line) {
-      drawWithLetterSpacing(ctx, line, x, y, -1);
-      y += layout.titleLH;
+    ctx.font = titleFont;
+    const titleLines = wrapText(ctx, titleText, blockW);
+    titleLines.forEach(function (line) {
+      drawWithLetterSpacing(ctx, line, x, y, -1.5);
+      y += titleLH;
     });
 
-    y += gapMainBody;
+    // — Body —
+    if (bodyAText) {
+      y += gapTitle;
+      ctx.fillStyle = INK;
+      ctx.font = bodyFont;
+      const bodyLines = wrapText(ctx, bodyAText, blockW);
+      bodyLines.forEach(function (line) {
+        ctx.fillText(line, x, y);
+        y += bodyLH;
+      });
+    }
 
-    ctx.fillStyle = INK;
-    ctx.font = '500 ' + bodySize + 'px ' + FONT_PROSE;
-    layout.bodyALines.forEach(function (line) {
-      ctx.fillText(line, x, y);
-      y += layout.bodyLH;
-    });
+    // — Ação de hoje —
+    if (actionText) {
+      y += gapBody;
+      ctx.fillStyle = INK;
 
-    y += gapBodies;
-    layout.bodyBLines.forEach(function (line) {
-      ctx.fillText(line, x, y);
-      y += layout.bodyLH;
-    });
+      // "AÇÃO DE HOJE:" bold label on its own line
+      ctx.font = actionBoldFont;
+      const labelText = 'AÇÃO DE HOJE:';
+      ctx.fillText(labelText, x, y);
+      y += actionLH;
 
-    y += gapBodyFooter;
+      // Action text in regular weight
+      ctx.font = actionFont;
+      const actionLines = wrapText(ctx, actionText, blockW);
+      actionLines.forEach(function (line) {
+        ctx.fillText(line, x, y);
+        y += actionLH;
+      });
+    }
 
-    ctx.fillStyle = INK;
-    ctx.font = '600 ' + sourceSize + 'px ' + FONT_PROSE;
-    layout.sourceLines.forEach(function (line) {
-      drawWithLetterSpacing(ctx, line, x, y, 1);
-      y += layout.sourceLH;
-    });
-
-    y += gapFooterCredit;
+    // — Footer —
+    y += gapAction;
     ctx.fillStyle = INK_DIM;
-    ctx.font = '500 ' + creditSize + 'px ' + FONT_PROSE;
-    layout.creditLines.forEach(function (line) {
+    ctx.font = footerFont;
+    if (footerText) {
+      wrapText(ctx, footerText, blockW).forEach(function (line) {
+        ctx.fillText(line, x, y);
+        y += footerLH;
+      });
+    }
+    wrapText(ctx, creditText, blockW).forEach(function (line) {
       ctx.fillText(line, x, y);
-      y += layout.creditLH;
+      y += footerLH;
     });
 
     const link = document.createElement('a');
@@ -1626,6 +1605,24 @@
       showToast('Template do capitulo do dia aplicado.', 'success');
     });
 
+    if (el.btnShareX) {
+      el.btnShareX.addEventListener('click', function () {
+        const text = encodeURIComponent(postCaption().slice(0, 240));
+        window.open('https://twitter.com/intent/tweet?text=' + text, '_blank', 'noopener');
+      });
+    }
+
+    if (el.btnShareFacebook) {
+      el.btnShareFacebook.addEventListener('click', function () {
+        const text = encodeURIComponent(postCaption().slice(0, 400));
+        window.open('https://www.facebook.com/sharer/sharer.php?quote=' + text, '_blank', 'noopener');
+      });
+    }
+
+    if (el.btnShareCopy) {
+      el.btnShareCopy.addEventListener('click', copyCaption);
+    }
+
     el.btnExportProgress.addEventListener('click', exportProgressPng);
     el.btnCopyProgress.addEventListener('click', copyProgressText);
 
@@ -1768,11 +1765,25 @@
     });
   }
 
+  function autoAdvanceToNextUnread() {
+    if (!state.done[selectedChapterId]) return;
+
+    const firstUndone = APP_DATA.chapters.find(function (c) {
+      return !state.done[c.id];
+    });
+
+    if (firstUndone) {
+      selectedChapterId = firstUndone.id;
+      state.selectedChapter = Number(firstUndone.id);
+    }
+  }
+
   function bootApp() {
     if (appBooted) return;
     appBooted = true;
 
     setupReadingEvents();
+    autoAdvanceToNextUnread();
     renderAll();
   }
 
