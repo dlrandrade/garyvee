@@ -7,8 +7,13 @@
 
   const STORAGE_KEY = 'gary_vee_game_reader_v5';
   const BOOK_CREDIT = '30 lições que aprendi... por @DanielLuzz';
-  const FONT_DISPLAY = '"Outfit", "Inter", system-ui, sans-serif';
-  const FONT_PROSE = '"EB Garamond", Georgia, "Times New Roman", serif';
+  const FONT_DISPLAY = '"Fraunces", "Times New Roman", Georgia, serif';
+  const FONT_PROSE = '"Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+  const INK = '#1A1714';
+  const PAPER = '#F5F1E8';
+  const PAPER_2 = '#EBE6D9';
+  const OXBLOOD = '#7A1F1F';
+  const OXBLOOD_2 = '#5C1818';
 
   const badgesConfig = [
     { id: 'start', label: 'Primeiro passo', check: (s) => Object.keys(s.done).length >= 1 },
@@ -906,21 +911,21 @@
     ctx.clearRect(0, 0, width, height);
 
     const bg = ctx.createLinearGradient(0, 0, width, height);
-    bg.addColorStop(0, '#020617');
-    bg.addColorStop(0.48, '#0f172a');
-    bg.addColorStop(1, '#020617');
+    bg.addColorStop(0, PAPER);
+    bg.addColorStop(0.48, PAPER_2);
+    bg.addColorStop(1, PAPER);
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, width, height);
 
     const glowA = ctx.createRadialGradient(width * 0.84, height * 0.1, 20, width * 0.84, height * 0.1, 460);
-    glowA.addColorStop(0, 'rgba(249,193,2,0.24)');
-    glowA.addColorStop(1, 'rgba(249,193,2,0)');
+    glowA.addColorStop(0, 'rgba(122,31,31,0.08)');
+    glowA.addColorStop(1, 'rgba(122,31,31,0)');
     ctx.fillStyle = glowA;
     ctx.fillRect(0, 0, width, height);
 
     const glowB = ctx.createRadialGradient(width * 0.12, height * 0.88, 20, width * 0.12, height * 0.88, 520);
-    glowB.addColorStop(0, 'rgba(30,41,59,0.44)');
-    glowB.addColorStop(1, 'rgba(30,41,59,0)');
+    glowB.addColorStop(0, 'rgba(26,23,20,0.05)');
+    glowB.addColorStop(1, 'rgba(26,23,20,0)');
     ctx.fillStyle = glowB;
     ctx.fillRect(0, 0, width, height);
 
@@ -960,11 +965,11 @@
       const bodyBLines = wrapText(ctx, bodyBText, blockW);
       const bodyLH = Math.round(bodySize * 1.2);
 
-      ctx.font = '600 ' + sourceSize + 'px ' + FONT_DISPLAY;
+      ctx.font = '600 ' + sourceSize + 'px ' + FONT_PROSE;
       const sourceLines = wrapText(ctx, sourceText, blockW);
       const sourceLH = Math.round(sourceSize * 1.25);
 
-      ctx.font = '500 ' + creditSize + 'px ' + FONT_DISPLAY;
+      ctx.font = '500 ' + creditSize + 'px ' + FONT_PROSE;
       const creditLines = wrapText(ctx, creditText, blockW);
       const creditLH = Math.round(creditSize * 1.25);
 
@@ -1020,7 +1025,7 @@
 
     let y = topMargin;
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = INK;
     ctx.font = '800 ' + titleSize + 'px ' + FONT_DISPLAY;
     layout.titleLines.forEach(function (line) {
       drawWithLetterSpacing(ctx, line, x, y, -1);
@@ -1029,7 +1034,7 @@
 
     y += gapMainBody;
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = INK;
     ctx.font = '500 ' + bodySize + 'px ' + FONT_PROSE;
     layout.bodyALines.forEach(function (line) {
       ctx.fillText(line, x, y);
@@ -1044,16 +1049,16 @@
 
     y += gapBodyFooter;
 
-    ctx.fillStyle = '#f9c102';
-    ctx.font = '600 ' + sourceSize + 'px ' + FONT_DISPLAY;
+    ctx.fillStyle = OXBLOOD;
+    ctx.font = '600 ' + sourceSize + 'px ' + FONT_PROSE;
     layout.sourceLines.forEach(function (line) {
       drawWithLetterSpacing(ctx, line, x, y, 1);
       y += layout.sourceLH;
     });
 
     y += gapFooterCredit;
-    ctx.fillStyle = 'rgba(249,193,2,0.92)';
-    ctx.font = '500 ' + creditSize + 'px ' + FONT_DISPLAY;
+    ctx.fillStyle = OXBLOOD_2;
+    ctx.font = '500 ' + creditSize + 'px ' + FONT_PROSE;
     layout.creditLines.forEach(function (line) {
       ctx.fillText(line, x, y);
       y += layout.creditLH;
@@ -1124,19 +1129,19 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    bg.addColorStop(0, '#020617');
-    bg.addColorStop(1, '#0f172a');
+    bg.addColorStop(0, PAPER);
+    bg.addColorStop(1, PAPER_2);
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const userName = currentUser ? userDisplayName(currentUser) : 'Leitor';
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = INK;
     ctx.font = '800 58px ' + FONT_DISPLAY;
     ctx.fillText('Meu progresso de leitura Gary Vee', 86, 130);
 
-    ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    ctx.font = '500 36px ' + FONT_DISPLAY;
+    ctx.fillStyle = 'rgba(26,23,20,0.72)';
+    ctx.font = '500 36px ' + FONT_PROSE;
     ctx.fillText(userName + ' • desafio 30 em 30', 86, 185);
 
     const cards = [
@@ -1152,16 +1157,16 @@
       const x = 86 + col * 460;
       const y = 250 + row * 210;
 
-      ctx.fillStyle = 'rgba(15,23,42,0.9)';
-      ctx.strokeStyle = 'rgba(148,163,184,0.32)';
+      ctx.fillStyle = '#EBE6D9';
+      ctx.strokeStyle = 'rgba(26,23,20,0.16)';
       ctx.lineWidth = 2;
       roundRect(ctx, x, y, 390, 170, 22, true, true);
 
-      ctx.fillStyle = '#f9c102';
-      ctx.font = '700 24px ' + FONT_DISPLAY;
+      ctx.fillStyle = OXBLOOD;
+      ctx.font = '700 24px ' + FONT_PROSE;
       ctx.fillText(card.label.toUpperCase(), x + 28, y + 52);
 
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = INK;
       ctx.font = '900 54px ' + FONT_DISPLAY;
       ctx.fillText(card.value, x + 28, y + 118);
     });
@@ -1171,26 +1176,26 @@
     const barW = 908;
     const barH = 20;
 
-    ctx.fillStyle = 'rgba(255,255,255,0.14)';
+    ctx.fillStyle = 'rgba(26,23,20,0.12)';
     roundRect(ctx, barX, barY, barW, barH, 999, true, false);
 
     const progressW = Math.round((percent / 100) * barW);
     const grad = ctx.createLinearGradient(barX, barY, barX + progressW, barY + barH);
-    grad.addColorStop(0, '#f9c102');
-    grad.addColorStop(1, '#d1a302');
+    grad.addColorStop(0, OXBLOOD);
+    grad.addColorStop(1, OXBLOOD_2);
     ctx.fillStyle = grad;
     roundRect(ctx, barX, barY, progressW, barH, 999, true, false);
 
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '500 30px ' + FONT_PROSE;
+    ctx.fillStyle = INK;
+    ctx.font = '500 30px ' + FONT_DISPLAY;
     ctx.fillText('Consistencia > motivacao. Um capitulo por dia.', 86, 790);
 
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.fillStyle = 'rgba(26,23,20,0.78)';
     ctx.font = '500 28px ' + FONT_PROSE;
     ctx.fillText('Entre na plataforma e acompanhe seu avanço com gamificacao.', 86, 840);
 
-    ctx.fillStyle = '#f9c102';
-    ctx.font = '700 22px ' + FONT_DISPLAY;
+    ctx.fillStyle = OXBLOOD;
+    ctx.font = '700 22px ' + FONT_PROSE;
     ctx.fillText('GARY VEE LEARNING EXPERIENCE', 86, 1240);
 
     const link = document.createElement('a');
