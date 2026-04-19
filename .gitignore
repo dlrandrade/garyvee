@@ -1,9 +1,1 @@
-.DS_Store
-.agents/
-*.pdf
-*.docx
-*.txt
-30-licoes-gary-vee-edicao-final.md
-skills-lock.json
-ebook-analysis/
-assets/icons/source-square.jpg
+Nothing needs to be added to the .gitignore file based on the provided changes. The only modified file is 'index.html', which is a source code file and should not be ignored.

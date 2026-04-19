@@ -395,11 +395,25 @@
     }
 
     .auth-book-note {
-      margin: 0;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      line-height: 1.5;
+      margin: 16px 0 0;
+      padding: 16px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--brand) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--brand) 45%, transparent);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-strong);
+      line-height: 1.6;
       text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .auth-book-note strong {
+      display: block;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-strong);
+      margin-top: 4px;
     }
 
     .field {
@@ -1580,7 +1594,7 @@
           <label for="authPassword">Senha</label>
           <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="Mínimo 6 caracteres" required />
         </div>
-        <p class="auth-book-note">Leitura estratégica com execução diária — do livro <strong>30 Lições que Aprendi Lendo Gary Vee</strong> de Daniel Luzz</p>
+        <p class="auth-book-note">Leitura estratégica com execução diária — do livro<strong>30 Lições que Aprendi Lendo Gary Vee de Daniel Luzz</strong></p>
         <button class="btn btn-primary" id="btnAuthSubmit" type="submit">Entrar</button>
       </form>
 
