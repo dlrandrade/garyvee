@@ -9,11 +9,12 @@
   const BOOK_CREDIT = '30 lições que aprendi... por @DanielLuzz';
   const FONT_DISPLAY = '"Fraunces", "Times New Roman", Georgia, serif';
   const FONT_PROSE = '"Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
-  const INK = '#1A1714';
-  const PAPER = '#F5F1E8';
-  const PAPER_2 = '#EBE6D9';
-  const OXBLOOD = '#7A1F1F';
-  const OXBLOOD_2 = '#5C1818';
+  const INK = '#1A1A1A';
+  const INK_DIM = '#404040';
+  const PAPER = '#FDFBF3';
+  const PAPER_2 = '#F5EED8';
+  const OXBLOOD = '#1A1A1A';
+  const OXBLOOD_2 = '#404040';
 
   const badgesConfig = [
     { id: 'start', label: 'Primeiro passo', check: (s) => Object.keys(s.done).length >= 1 },
@@ -63,6 +64,8 @@
 
     accountName: byId('accountName'),
     accountEmail: byId('accountEmail'),
+    accountFirstName: byId('accountFirstName'),
+    accountSaveHint: byId('accountSaveHint'),
     btnAccountMenu: byId('btnAccountMenu'),
     accountMenu: byId('accountMenu'),
     btnSignOut: byId('btnSignOut'),
@@ -476,12 +479,22 @@
     }
   }
 
+  function userFirstName(user) {
+    if (!user || !user.user_metadata) return '';
+    const meta = user.user_metadata;
+    const first = typeof meta.first_name === 'string' ? meta.first_name.trim() : '';
+    if (first) return first;
+    if (typeof meta.full_name === 'string' && meta.full_name.trim()) {
+      return meta.full_name.trim().split(/\s+/)[0] || '';
+    }
+    return '';
+  }
+
   function userDisplayName(user) {
     if (!user) return 'Leitor';
 
-    if (user.user_metadata && typeof user.user_metadata.full_name === 'string' && user.user_metadata.full_name.trim()) {
-      return user.user_metadata.full_name.trim();
-    }
+    const firstName = userFirstName(user);
+    if (firstName) return firstName;
 
     const email = user.email || '';
     if (!email.includes('@')) return email || 'Leitor';
@@ -492,8 +505,48 @@
   function updateAccountUi(user) {
     if (!user) return;
 
-    el.accountName.textContent = userDisplayName(user);
-    el.accountEmail.textContent = user.email || 'Sem e-mail';
+    if (el.accountName) el.accountName.textContent = userDisplayName(user);
+    if (el.accountEmail) el.accountEmail.textContent = user.email || 'Sem e-mail';
+    if (el.accountFirstName) el.accountFirstName.value = userFirstName(user);
+    if (el.accountSaveHint) el.accountSaveHint.textContent = '';
+  }
+
+  let firstNameSaveTimer = null;
+
+  async function persistFirstName(nextName) {
+    if (!cloudEnabled || !supabaseClient || !currentUser) {
+      if (el.accountSaveHint) el.accountSaveHint.textContent = '';
+      return;
+    }
+
+    if (el.accountSaveHint) el.accountSaveHint.textContent = 'Salvando…';
+
+    try {
+      const result = await supabaseClient.auth.updateUser({
+        data: { first_name: nextName }
+      });
+      if (result.error) throw result.error;
+
+      if (result.data && result.data.user) {
+        currentUser = result.data.user;
+      }
+      if (el.accountName) el.accountName.textContent = userDisplayName(currentUser);
+      if (el.accountSaveHint) el.accountSaveHint.textContent = nextName ? 'Salvo na nuvem.' : 'Removido.';
+    } catch (error) {
+      console.error(error);
+      if (el.accountSaveHint) el.accountSaveHint.textContent = 'Falha ao salvar.';
+      showToast('Falha ao salvar primeiro nome.', 'error');
+    }
+  }
+
+  function scheduleFirstNameSave(value) {
+    if (firstNameSaveTimer) {
+      window.clearTimeout(firstNameSaveTimer);
+      firstNameSaveTimer = null;
+    }
+    firstNameSaveTimer = window.setTimeout(function () {
+      persistFirstName(value.trim());
+    }, 500);
   }
 
   async function handleSignedIn(user) {
@@ -516,30 +569,70 @@
 
     isHydratingCloud = true;
     try {
-      const result = await supabaseClient
-        .from('reader_state')
-        .select('data, selected_chapter, xp, start_date')
-        .eq('user_id', currentUser.id)
-        .maybeSingle();
+      const [stateRes, progressRes] = await Promise.all([
+        supabaseClient
+          .from('reader_state')
+          .select('data, selected_chapter, xp, start_date')
+          .eq('user_id', currentUser.id)
+          .maybeSingle(),
+        supabaseClient
+          .from('reading_progress')
+          .select('chapter_id, completed_at')
+          .eq('user_id', currentUser.id)
+      ]);
 
-      if (result.error && result.error.code !== 'PGRST116') {
-        throw result.error;
+      if (stateRes.error && stateRes.error.code !== 'PGRST116') {
+        throw stateRes.error;
+      }
+      if (progressRes.error) {
+        throw progressRes.error;
       }
 
-      if (result.data && result.data.data) {
-        applySnapshot(result.data.data);
+      let hasSnapshot = false;
+      if (stateRes.data && stateRes.data.data) {
+        applySnapshot(stateRes.data.data);
 
-        if (result.data.selected_chapter) {
-          selectedChapterId = String(result.data.selected_chapter).padStart(2, '0');
+        if (stateRes.data.selected_chapter) {
+          selectedChapterId = String(stateRes.data.selected_chapter).padStart(2, '0');
         }
-        if (result.data.start_date) {
-          state.startDate = result.data.start_date;
+        if (stateRes.data.start_date) {
+          state.startDate = stateRes.data.start_date;
         }
-        if (typeof result.data.xp === 'number') {
-          state.xp = result.data.xp;
+        if (typeof stateRes.data.xp === 'number') {
+          state.xp = stateRes.data.xp;
         }
+        hasSnapshot = true;
+      }
 
+      // Authoritative merge: any chapter present in reading_progress
+      // must also be flagged done locally, even if the debounced
+      // reader_state snapshot hasn't landed yet.
+      const progressRows = Array.isArray(progressRes.data) ? progressRes.data : [];
+      let mergedFromProgress = false;
+      progressRows.forEach(function (row) {
+        const cid = String(row.chapter_id || '').padStart(2, '0');
+        if (!cid) return;
+        if (!state.done[cid]) {
+          state.done[cid] = true;
+          mergedFromProgress = true;
+          const exists = state.logs.some(function (l) { return l.chapterId === cid; });
+          if (!exists) {
+            state.logs.push({
+              chapterId: cid,
+              date: (row.completed_at || new Date().toISOString()).slice(0, 10)
+            });
+          }
+        }
+      });
+
+      if (hasSnapshot || mergedFromProgress) {
         saveState({ queueCloud: false });
+        if (mergedFromProgress) {
+          // push merged state back to reader_state so future hydrates are consistent
+          persistReaderSnapshot().catch(function (error) {
+            console.error(error);
+          });
+        }
         return;
       }
 
@@ -918,14 +1011,14 @@
     ctx.fillRect(0, 0, width, height);
 
     const glowA = ctx.createRadialGradient(width * 0.84, height * 0.1, 20, width * 0.84, height * 0.1, 460);
-    glowA.addColorStop(0, 'rgba(122,31,31,0.08)');
-    glowA.addColorStop(1, 'rgba(122,31,31,0)');
+    glowA.addColorStop(0, 'rgba(255,203,3,0.14)');
+    glowA.addColorStop(1, 'rgba(255,203,3,0)');
     ctx.fillStyle = glowA;
     ctx.fillRect(0, 0, width, height);
 
     const glowB = ctx.createRadialGradient(width * 0.12, height * 0.88, 20, width * 0.12, height * 0.88, 520);
-    glowB.addColorStop(0, 'rgba(26,23,20,0.05)');
-    glowB.addColorStop(1, 'rgba(26,23,20,0)');
+    glowB.addColorStop(0, 'rgba(64,64,64,0.06)');
+    glowB.addColorStop(1, 'rgba(64,64,64,0)');
     ctx.fillStyle = glowB;
     ctx.fillRect(0, 0, width, height);
 
@@ -939,12 +1032,12 @@
     const creditText = BOOK_CREDIT;
 
     const minTitle = format === 'feed' ? 42 : 46;
-    const minBody = format === 'feed' ? 42 : 45;
+    const minBody = format === 'feed' ? 63 : 68;
     const minSource = format === 'feed' ? 18 : 20;
     const minCredit = format === 'feed' ? 17 : 18;
 
     let titleSize = format === 'feed' ? 62 : 66;
-    let bodySize = format === 'feed' ? 66 : 72;
+    let bodySize = format === 'feed' ? 99 : 108;
     let sourceSize = format === 'feed' ? 32 : 34;
     let creditSize = format === 'feed' ? 30 : 32;
 
@@ -1049,7 +1142,7 @@
 
     y += gapBodyFooter;
 
-    ctx.fillStyle = OXBLOOD;
+    ctx.fillStyle = INK;
     ctx.font = '600 ' + sourceSize + 'px ' + FONT_PROSE;
     layout.sourceLines.forEach(function (line) {
       drawWithLetterSpacing(ctx, line, x, y, 1);
@@ -1057,7 +1150,7 @@
     });
 
     y += gapFooterCredit;
-    ctx.fillStyle = OXBLOOD_2;
+    ctx.fillStyle = INK_DIM;
     ctx.font = '500 ' + creditSize + 'px ' + FONT_PROSE;
     layout.creditLines.forEach(function (line) {
       ctx.fillText(line, x, y);
@@ -1370,13 +1463,23 @@
     state.xp += 120;
     state.logs.push({ chapterId: id, date: todayKey() });
 
-    saveState();
+    saveState({ queueCloud: false });
     renderDashboard();
     renderChapterList();
 
     showToast('Capitulo concluido. +120 XP.', 'success');
 
-    persistChapterCompletion(id, 120).catch(function (error) {
+    // Immediate sync: do NOT rely on the 560ms debounced snapshot —
+    // mobile users may close the tab before it fires, which leaves
+    // desktop out of sync. Fire both writes in parallel.
+    if (syncTimer) {
+      window.clearTimeout(syncTimer);
+      syncTimer = null;
+    }
+    Promise.all([
+      persistChapterCompletion(id, 120),
+      persistReaderSnapshot()
+    ]).catch(function (error) {
       console.error(error);
       showToast('Falha ao registrar conclusao na nuvem.', 'error');
     });
@@ -1440,6 +1543,19 @@
 
       document.addEventListener('click', function () {
         closeAccountMenu();
+      });
+    }
+
+    if (el.accountFirstName) {
+      el.accountFirstName.addEventListener('input', function () {
+        scheduleFirstNameSave(el.accountFirstName.value);
+      });
+      el.accountFirstName.addEventListener('blur', function () {
+        if (firstNameSaveTimer) {
+          window.clearTimeout(firstNameSaveTimer);
+          firstNameSaveTimer = null;
+        }
+        persistFirstName(el.accountFirstName.value.trim());
       });
     }
 
@@ -1583,32 +1699,63 @@
       }
     });
 
-    el.btnSignOut.addEventListener('click', async function () {
-      if (!cloudEnabled || !supabaseClient) {
-        toggleAppShell(false);
-        showToast('Sessao encerrada.', 'success');
-        return;
+    async function handleSignOutClick(ev) {
+      if (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
       }
+
+      const btn = el.btnSignOut || byId('btnSignOut');
+      if (btn) btn.disabled = true;
 
       try {
-        if (syncTimer) {
-          window.clearTimeout(syncTimer);
-          syncTimer = null;
+        if (!cloudEnabled || !supabaseClient) {
+          currentUser = null;
+          closeAccountMenu();
+          toggleAppShell(false);
+          showToast('Sessao encerrada.', 'success');
+          return;
         }
-        await persistReaderSnapshot();
-      } catch (error) {
-        console.error(error);
-      }
 
-      const result = await supabaseClient.auth.signOut();
-      if (result.error) {
-        showToast('Erro ao sair: ' + result.error.message, 'error');
-        return;
-      }
+        try {
+          if (syncTimer) {
+            window.clearTimeout(syncTimer);
+            syncTimer = null;
+          }
+          await persistReaderSnapshot();
+        } catch (error) {
+          console.error(error);
+        }
 
-      toggleAppShell(false);
-      showToast('Voce saiu da sessao.', 'success');
-    });
+        try {
+          const result = await supabaseClient.auth.signOut();
+          if (result && result.error) {
+            console.error(result.error);
+            showToast('Erro ao sair: ' + result.error.message, 'error');
+          }
+        } catch (error) {
+          console.error(error);
+          showToast('Erro ao sair.', 'error');
+        }
+
+        currentUser = null;
+        closeAccountMenu();
+        toggleAppShell(false);
+        showToast('Voce saiu da sessao.', 'success');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    if (el.btnSignOut) {
+      el.btnSignOut.addEventListener('click', handleSignOutClick);
+    } else {
+      // Late fallback in case the element wasn't in the DOM at boot.
+      document.addEventListener('click', function (ev) {
+        const target = ev.target && ev.target.closest && ev.target.closest('#btnSignOut');
+        if (target) handleSignOutClick(ev);
+      });
+    }
   }
 
   function registerServiceWorker() {
