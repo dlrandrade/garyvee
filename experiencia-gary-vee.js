@@ -525,9 +525,13 @@
     if (el.accountSaveHint) el.accountSaveHint.textContent = 'Salvando…';
 
     try {
-      const result = await supabaseClient.auth.updateUser({
-        data: { first_name: nextName }
+      const timeoutPromise = new Promise(function (_, reject) {
+        setTimeout(function () { reject(new Error('timeout')); }, 8000);
       });
+      const result = await Promise.race([
+        supabaseClient.auth.updateUser({ data: { first_name: nextName } }),
+        timeoutPromise
+      ]);
       if (result.error) throw result.error;
 
       if (result.data && result.data.user) {
@@ -537,7 +541,8 @@
       if (el.accountSaveHint) el.accountSaveHint.textContent = nextName ? 'Salvo na nuvem.' : 'Removido.';
     } catch (error) {
       console.error(error);
-      if (el.accountSaveHint) el.accountSaveHint.textContent = 'Falha ao salvar.';
+      const msg = error.message === 'timeout' ? 'Tempo esgotado — tente novamente.' : 'Falha ao salvar.';
+      if (el.accountSaveHint) el.accountSaveHint.textContent = msg;
       showToast('Falha ao salvar primeiro nome.', 'error');
     }
   }
@@ -680,6 +685,12 @@
       .upsert(payload, { onConflict: 'user_id' });
 
     if (result.error) {
+      if (result.error.code === '42501') {
+        cloudEnabled = false;
+        console.warn('RLS não configurada — sincronização desativada. Execute o schema no Supabase SQL Editor.');
+        showToast('Execute o schema SQL no Supabase para ativar a sincronização.', 'error');
+        return;
+      }
       throw result.error;
     }
 
@@ -941,7 +952,7 @@
 
     const actionText = String(el.shareBodyInputB.value || '').trim();
     el.storyBodyB.innerHTML = actionText
-      ? '<strong>Ação de hoje:</strong> ' + escapeHtml(actionText)
+      ? '<strong>Ação de hoje:</strong><br>' + escapeHtml(actionText)
       : '';
 
     el.storyFooter.textContent = String(el.shareTagInput.value || '').trim();
@@ -1608,7 +1619,7 @@
     if (el.btnShareX) {
       el.btnShareX.addEventListener('click', function () {
         const text = encodeURIComponent(postCaption().slice(0, 240));
-        window.open('https://twitter.com/intent/tweet?text=' + text, '_blank', 'noopener');
+        window.open('https://x.com/intent/post?text=' + text, '_blank', 'noopener');
       });
     }
 
