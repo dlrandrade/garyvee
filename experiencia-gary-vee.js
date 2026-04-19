@@ -11,7 +11,7 @@
   const FONT_PROSE = '"Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
   const INK = '#1A1A1A';
   const INK_DIM = '#404040';
-  const PAPER = '#FDFBF3';
+  const PAPER = '#FFF7DD';
   const PAPER_2 = '#F5EED8';
   const OXBLOOD = '#1A1A1A';
   const OXBLOOD_2 = '#404040';
@@ -38,6 +38,7 @@
   let isHydratingCloud = false;
   let syncTimer = null;
   let toastCounter = 0;
+  let cloudWriteBlocked = false;
 
   const runtimeConfig = {
     supabaseUrl: '',
@@ -209,6 +210,30 @@
 
     if (opts.queueCloud !== false) {
       queueCloudSave();
+    }
+  }
+
+  function handleCloudWriteError(error, friendlyMessage) {
+    const code = error && error.code ? String(error.code) : '';
+    const rlsBlocked = code === '42501';
+
+    if (rlsBlocked) {
+      cloudWriteBlocked = true;
+      if (syncTimer) {
+        window.clearTimeout(syncTimer);
+        syncTimer = null;
+      }
+      if (el.accountSaveHint) {
+        el.accountSaveHint.textContent = 'Sem permissao no Supabase.';
+      }
+      showToast('Sincronizacao pausada: ajuste as politicas RLS no Supabase.', 'error');
+      console.warn('Supabase RLS bloqueou escrita em reader_state (code 42501).');
+      return;
+    }
+
+    console.error(error);
+    if (friendlyMessage) {
+      showToast(friendlyMessage, 'error');
     }
   }
 
@@ -525,9 +550,16 @@
     if (el.accountSaveHint) el.accountSaveHint.textContent = 'Salvando…';
 
     try {
-      const result = await supabaseClient.auth.updateUser({
-        data: { first_name: nextName }
-      });
+      const result = await Promise.race([
+        supabaseClient.auth.updateUser({
+          data: { first_name: nextName }
+        }),
+        new Promise(function (_resolve, reject) {
+          window.setTimeout(function () {
+            reject(new Error('Tempo esgotado ao salvar nome.'));
+          }, 9000);
+        })
+      ]);
       if (result.error) throw result.error;
 
       if (result.data && result.data.user) {
@@ -536,9 +568,8 @@
       if (el.accountName) el.accountName.textContent = userDisplayName(currentUser);
       if (el.accountSaveHint) el.accountSaveHint.textContent = nextName ? 'Salvo na nuvem.' : 'Removido.';
     } catch (error) {
-      console.error(error);
+      handleCloudWriteError(error, 'Falha ao salvar primeiro nome.');
       if (el.accountSaveHint) el.accountSaveHint.textContent = 'Falha ao salvar.';
-      showToast('Falha ao salvar primeiro nome.', 'error');
     }
   }
 
@@ -634,7 +665,7 @@
         if (mergedFromProgress) {
           // push merged state back to reader_state so future hydrates are consistent
           persistReaderSnapshot().catch(function (error) {
-            console.error(error);
+            handleCloudWriteError(error);
           });
         }
         return;
@@ -642,15 +673,14 @@
 
       await persistReaderSnapshot();
     } catch (error) {
-      console.error(error);
-      showToast('Falha ao carregar progresso em nuvem.', 'error');
+      handleCloudWriteError(error, 'Falha ao carregar progresso em nuvem.');
     } finally {
       isHydratingCloud = false;
     }
   }
 
   function queueCloudSave() {
-    if (!cloudEnabled || !supabaseClient || !currentUser || isHydratingCloud) return;
+    if (!cloudEnabled || !supabaseClient || !currentUser || isHydratingCloud || cloudWriteBlocked) return;
 
     if (syncTimer) {
       window.clearTimeout(syncTimer);
@@ -658,13 +688,13 @@
 
     syncTimer = window.setTimeout(function () {
       persistReaderSnapshot().catch(function (error) {
-        console.error(error);
+        handleCloudWriteError(error);
       });
     }, 560);
   }
 
   async function persistReaderSnapshot() {
-    if (!cloudEnabled || !supabaseClient || !currentUser || isHydratingCloud) return;
+    if (!cloudEnabled || !supabaseClient || !currentUser || isHydratingCloud || cloudWriteBlocked) return;
 
     const payload = {
       user_id: currentUser.id,
@@ -867,8 +897,7 @@
         renderDashboard();
 
         persistFlashProgress(key, arr).catch(function (error) {
-          console.error(error);
-          showToast('Falha ao sincronizar card de fixacao.', 'error');
+          handleCloudWriteError(error, 'Falha ao sincronizar card de fixacao.');
         });
       });
     });
@@ -894,7 +923,7 @@
     return {
       main: compactText(chapter.quotePt),
       bodyA: compressMeaning(chapter.lesson, 24),
-      bodyB: compressMeaning('Acao de hoje: ' + (chapter.actions[0] || chapter.reflection), 20),
+      bodyB: compressMeaning(chapter.actions[0] || chapter.reflection, 20),
       footer: sourceLabel
     };
   }
@@ -941,7 +970,7 @@
 
     const actionText = String(el.shareBodyInputB.value || '').trim();
     el.storyBodyB.innerHTML = actionText
-      ? '<strong>Ação de hoje:</strong> ' + escapeHtml(actionText)
+      ? '<strong>Ação de hoje:</strong><br>' + escapeHtml(actionText)
       : '';
 
     el.storyFooter.textContent = String(el.shareTagInput.value || '').trim();
@@ -1153,8 +1182,7 @@
       footer: String(el.shareTagInput.value || '').trim() + ' | ' + BOOK_CREDIT,
       caption: postCaption()
     }).catch(function (error) {
-      console.error(error);
-      showToast('Falha ao salvar historico de post.', 'error');
+      handleCloudWriteError(error, 'Falha ao salvar historico de post.');
     });
   }
 
@@ -1287,8 +1315,7 @@
       footer: 'Gary Vee Learning Experience',
       caption: progressText()
     }).catch(function (error) {
-      console.error(error);
-      showToast('Nao foi possivel salvar historico do progresso.', 'error');
+      handleCloudWriteError(error, 'Nao foi possivel salvar historico do progresso.');
     });
   }
 
@@ -1403,10 +1430,14 @@
     el.chapterTodayPill.textContent = chapterOfDay().id;
     el.trailStatus.textContent = status.lag <= 0 ? 'No ritmo' : 'Atraso: ' + status.lag;
 
-    el.crossInsight.textContent = String(APP_DATA.crossInsight || '')
-      .replace(/# Cross-Book Insight:\s*/g, '')
-      .replace(/##/g, '\n')
-      .slice(0, 900);
+    el.crossInsight.innerHTML = [
+      '<strong>Leitura combinada:</strong> quando você executa com constância e cuida da relação com o público, o crescimento acelera.',
+      '<ul>',
+      '<li>Execução diária vence excesso de planejamento.</li>',
+      '<li>Relacionamento genuíno melhora retenção e indicação.</li>',
+      '<li>Consistência simples, por 30 dias, gera resultado acumulado.</li>',
+      '</ul>'
+    ].join('');
 
     el.entityCount.textContent = String(APP_DATA.entitiesCount || 0);
 
@@ -1459,8 +1490,7 @@
       persistChapterCompletion(id, 120),
       persistReaderSnapshot()
     ]).catch(function (error) {
-      console.error(error);
-      showToast('Falha ao registrar conclusao na nuvem.', 'error');
+      handleCloudWriteError(error, 'Falha ao registrar conclusao na nuvem.');
     });
 
     const chapter = getChapterById(id);
@@ -1608,7 +1638,11 @@
     if (el.btnShareX) {
       el.btnShareX.addEventListener('click', function () {
         const text = encodeURIComponent(postCaption().slice(0, 240));
-        window.open('https://twitter.com/intent/tweet?text=' + text, '_blank', 'noopener');
+        const target = 'https://x.com/intent/post?text=' + text;
+        const popup = window.open(target, '_blank', 'noopener');
+        if (!popup) {
+          window.open('https://twitter.com/intent/tweet?text=' + text, '_blank', 'noopener');
+        }
       });
     }
 
@@ -1721,7 +1755,7 @@
           }
           await persistReaderSnapshot();
         } catch (error) {
-          console.error(error);
+          handleCloudWriteError(error);
         }
 
         try {
