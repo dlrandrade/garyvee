@@ -81,16 +81,19 @@ create index if not exists idx_share_exports_user_created
 create index if not exists idx_flashcard_progress_user
   on public.flashcard_progress(user_id);
 
+drop trigger if exists trg_reader_profiles_updated_at on public.reader_profiles;
 create trigger trg_reader_profiles_updated_at
 before update on public.reader_profiles
 for each row
 execute function public.touch_updated_at();
 
+drop trigger if exists trg_reader_state_updated_at on public.reader_state;
 create trigger trg_reader_state_updated_at
 before update on public.reader_state
 for each row
 execute function public.touch_updated_at();
 
+drop trigger if exists trg_flashcard_progress_updated_at on public.flashcard_progress;
 create trigger trg_flashcard_progress_updated_at
 before update on public.flashcard_progress
 for each row
@@ -102,30 +105,35 @@ alter table public.reading_progress enable row level security;
 alter table public.flashcard_progress enable row level security;
 alter table public.share_exports enable row level security;
 
+drop policy if exists "profiles own rows" on public.reader_profiles;
 create policy "profiles own rows"
   on public.reader_profiles
   for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+drop policy if exists "state own rows" on public.reader_state;
 create policy "state own rows"
   on public.reader_state
   for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+drop policy if exists "progress own rows" on public.reading_progress;
 create policy "progress own rows"
   on public.reading_progress
   for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+drop policy if exists "flash own rows" on public.flashcard_progress;
 create policy "flash own rows"
   on public.flashcard_progress
   for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+drop policy if exists "share own rows" on public.share_exports;
 create policy "share own rows"
   on public.share_exports
   for all
