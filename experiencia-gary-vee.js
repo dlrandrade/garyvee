@@ -7,6 +7,8 @@
 
   const STORAGE_KEY = 'gary_vee_game_reader_v5';
   const BOOK_CREDIT = '30 lições que aprendi... por @DanielLuzz';
+  const FONT_DISPLAY = '"Outfit", "Inter", system-ui, sans-serif';
+  const FONT_PROSE = '"EB Garamond", Georgia, "Times New Roman", serif';
 
   const badgesConfig = [
     { id: 'start', label: 'Primeiro passo', check: (s) => Object.keys(s.done).length >= 1 },
@@ -949,22 +951,22 @@
     const gapFooterCredit = 0;
 
     function layoutHeight() {
-      ctx.font = '800 ' + titleSize + 'px "Outfit", sans-serif';
+      ctx.font = '800 ' + titleSize + 'px ' + FONT_DISPLAY;
       const titleLines = wrapText(ctx, titleText, blockW);
       const titleLH = Math.round(titleSize * 1.18);
 
-      ctx.font = '500 ' + bodySize + 'px "EB Garamond", "Outfit", serif';
+      ctx.font = '500 ' + bodySize + 'px ' + FONT_PROSE;
       const bodyALines = wrapText(ctx, bodyAText, blockW);
       const bodyBLines = wrapText(ctx, bodyBText, blockW);
       const bodyLH = Math.round(bodySize * 1.2);
 
-      ctx.font = '500 ' + sourceSize + 'px "EB Garamond", "Outfit", serif';
+      ctx.font = '600 ' + sourceSize + 'px ' + FONT_DISPLAY;
       const sourceLines = wrapText(ctx, sourceText, blockW);
-      const sourceLH = Math.round(sourceSize * 1.2);
+      const sourceLH = Math.round(sourceSize * 1.25);
 
-      ctx.font = '500 ' + creditSize + 'px "EB Garamond", "Outfit", serif';
+      ctx.font = '500 ' + creditSize + 'px ' + FONT_DISPLAY;
       const creditLines = wrapText(ctx, creditText, blockW);
-      const creditLH = Math.round(creditSize * 1.2);
+      const creditLH = Math.round(creditSize * 1.25);
 
       const heightUsed =
         topMargin +
@@ -1019,7 +1021,7 @@
     let y = topMargin;
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = '800 ' + titleSize + 'px "Outfit", sans-serif';
+    ctx.font = '800 ' + titleSize + 'px ' + FONT_DISPLAY;
     layout.titleLines.forEach(function (line) {
       drawWithLetterSpacing(ctx, line, x, y, -1);
       y += layout.titleLH;
@@ -1028,7 +1030,7 @@
     y += gapMainBody;
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = '500 ' + bodySize + 'px "EB Garamond", "Outfit", serif';
+    ctx.font = '500 ' + bodySize + 'px ' + FONT_PROSE;
     layout.bodyALines.forEach(function (line) {
       ctx.fillText(line, x, y);
       y += layout.bodyLH;
@@ -1043,15 +1045,15 @@
     y += gapBodyFooter;
 
     ctx.fillStyle = '#f9c102';
-    ctx.font = '600 ' + sourceSize + 'px "EB Garamond", "Outfit", serif';
+    ctx.font = '600 ' + sourceSize + 'px ' + FONT_DISPLAY;
     layout.sourceLines.forEach(function (line) {
-      ctx.fillText(line, x, y);
+      drawWithLetterSpacing(ctx, line, x, y, 1);
       y += layout.sourceLH;
     });
 
     y += gapFooterCredit;
     ctx.fillStyle = 'rgba(249,193,2,0.92)';
-    ctx.font = '500 ' + creditSize + 'px "EB Garamond", "Outfit", serif';
+    ctx.font = '500 ' + creditSize + 'px ' + FONT_DISPLAY;
     layout.creditLines.forEach(function (line) {
       ctx.fillText(line, x, y);
       y += layout.creditLH;
@@ -1130,11 +1132,11 @@
     const userName = currentUser ? userDisplayName(currentUser) : 'Leitor';
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = '700 58px "Outfit", sans-serif';
+    ctx.font = '800 58px ' + FONT_DISPLAY;
     ctx.fillText('Meu progresso de leitura Gary Vee', 86, 130);
 
     ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    ctx.font = '500 36px "Outfit", sans-serif';
+    ctx.font = '500 36px ' + FONT_DISPLAY;
     ctx.fillText(userName + ' • desafio 30 em 30', 86, 185);
 
     const cards = [
@@ -1156,11 +1158,11 @@
       roundRect(ctx, x, y, 390, 170, 22, true, true);
 
       ctx.fillStyle = '#f9c102';
-      ctx.font = '600 24px "Outfit", sans-serif';
+      ctx.font = '700 24px ' + FONT_DISPLAY;
       ctx.fillText(card.label.toUpperCase(), x + 28, y + 52);
 
       ctx.fillStyle = '#ffffff';
-      ctx.font = '800 54px "Outfit", sans-serif';
+      ctx.font = '900 54px ' + FONT_DISPLAY;
       ctx.fillText(card.value, x + 28, y + 118);
     });
 
@@ -1180,16 +1182,16 @@
     roundRect(ctx, barX, barY, progressW, barH, 999, true, false);
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = '600 30px "Outfit", sans-serif';
+    ctx.font = '500 30px ' + FONT_PROSE;
     ctx.fillText('Consistencia > motivacao. Um capitulo por dia.', 86, 790);
 
     ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.font = '500 28px "Outfit", sans-serif';
+    ctx.font = '500 28px ' + FONT_PROSE;
     ctx.fillText('Entre na plataforma e acompanhe seu avanço com gamificacao.', 86, 840);
 
     ctx.fillStyle = '#f9c102';
-    ctx.font = '500 24px "Outfit", sans-serif';
-    ctx.fillText('gary vee learning experience', 86, 1240);
+    ctx.font = '700 22px ' + FONT_DISPLAY;
+    ctx.fillText('GARY VEE LEARNING EXPERIENCE', 86, 1240);
 
     const link = document.createElement('a');
     link.download = 'progresso-gary-vee.png';
