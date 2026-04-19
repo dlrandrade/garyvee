@@ -1103,7 +1103,6 @@
     const footerText = compactText(String(el.shareTagInput.value || ''));
     const creditText = BOOK_CREDIT;
 
-    const topMargin    = format === 'feed' ? 180 : 240;
     const gapTitle     = 52;
     const gapBody      = 36;
     const gapAction    = 40;
@@ -1113,9 +1112,8 @@
     const actionLH = Math.round(actionSize * 1.4);
     const footerLH = Math.round(footerSize * 1.4);
 
-    // Calculate total content height to determine bottom margin
+    // Calculate total content height to determine proper margins for vertical centering
     let contentHeight = 0;
-    let yTemp = 0;
     
     // Title height
     ctx.font = titleFont;
@@ -1147,8 +1145,10 @@
     const creditLinesTemp = wrapText(ctx, creditText, blockW);
     contentHeight += (footerLinesTemp.length + creditLinesTemp.length) * footerLH;
     
-    // Use the same margin for top and bottom
-    const bottomMargin = topMargin;
+    // Calculate equal top and bottom margins for vertical centering
+    const availableHeight = height - contentHeight;
+    const topMargin = Math.max(availableHeight / 2, format === 'feed' ? 120 : 160);
+    const bottomMargin = availableHeight - topMargin;
     
     // Start position from top
     let y = topMargin;
@@ -1211,7 +1211,7 @@
 
     // Verify bottom margin equals top margin
     const actualBottomMargin = height - y;
-    console.log('Top margin:', topMargin, 'Bottom margin:', actualBottomMargin, 'Content height:', contentHeight);
+    console.log('Top margin:', topMargin, 'Bottom margin:', actualBottomMargin, 'Content height:', contentHeight, 'Available height:', availableHeight);
 
     const link = document.createElement('a');
     link.download = 'gary-vee-capitulo-' + chapterId + '-' + variant + '-' + format + '.png';
