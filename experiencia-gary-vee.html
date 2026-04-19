@@ -394,6 +394,14 @@
       gap: var(--space-3);
     }
 
+    .auth-book-note {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      text-align: center;
+    }
+
     .field {
       display: grid;
       gap: 8px;
@@ -779,6 +787,11 @@
 
     .search {
       margin-top: 12px;
+      color: var(--text-strong);
+    }
+
+    .search::placeholder {
+      color: var(--muted);
     }
 
     .chip-row {
@@ -800,7 +813,7 @@
     }
 
     .chip.active {
-      color: var(--bg);
+      color: var(--text-strong);
       background: linear-gradient(130deg, var(--brand), color-mix(in srgb, var(--brand) 52%, var(--brand-2)));
       border-color: color-mix(in srgb, var(--brand) 50%, transparent);
       box-shadow: 0 2px 8px -3px rgba(64,64,64,0.18);
@@ -844,7 +857,6 @@
       background: linear-gradient(130deg, var(--brand), color-mix(in srgb, var(--brand) 52%, var(--brand-2)));
       border-color: color-mix(in srgb, var(--brand) 50%, transparent);
       box-shadow: 0 4px 14px -6px rgba(64,64,64,0.22);
-      color: var(--bg);
       opacity: 1;
     }
 
@@ -1209,7 +1221,7 @@
     }
 
     .badge.unlocked {
-      color: var(--bg);
+      color: var(--text-strong);
       border-color: color-mix(in srgb, var(--brand) 50%, transparent);
       background: linear-gradient(130deg, var(--brand), color-mix(in srgb, var(--brand) 52%, var(--brand-2)));
       font-weight: 700;
@@ -1408,7 +1420,7 @@
     .kpi strong {
       display: block;
       margin-top: 5px;
-      font-size: 1.02rem;
+      font-size: 0.88rem;
     }
 
     .mobile-actions {
@@ -1568,6 +1580,7 @@
           <label for="authPassword">Senha</label>
           <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="Mínimo 6 caracteres" required />
         </div>
+        <p class="auth-book-note">Leitura estratégica com execução diária — do livro <strong>30 Lições que Aprendi Lendo Gary Vee</strong> de Daniel Luzz</p>
         <button class="btn btn-primary" id="btnAuthSubmit" type="submit">Entrar</button>
       </form>
 
@@ -1820,10 +1833,7 @@
               <button class="btn btn-primary" id="btnDownloadPost" type="button">Baixar PNG</button>
               <button class="btn" id="btnCopyCaption" type="button">Copiar texto</button>
               <button class="btn" id="btnDailyShare" type="button">Compartilhar capítulo do dia</button>
-            </div>
-
-            <div class="social-row" aria-label="Compartilhar nas redes">
-              <button class="btn social-btn" id="btnShareCopy" type="button" title="Copiar legenda">
+              <button class="btn" id="btnShareCopy" type="button" title="Copiar legenda">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="5" width="10" height="10" rx="2"/><path d="M3 11H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1"/></svg>
                 Copiar
               </button>
