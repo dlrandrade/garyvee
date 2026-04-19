@@ -375,10 +375,8 @@
     authMode = mode === 'signup' ? 'signup' : 'login';
     const isLogin = authMode === 'login';
 
-    el.authTitle.textContent = isLogin ? 'Entrar' : 'Criar conta';
-    el.authSubtitle.textContent = isLogin
-      ? 'Acesse para sincronizar seu progresso.'
-      : 'Crie uma conta para salvar seu progresso na nuvem.';
+    el.authTitle.innerHTML = '<strong>30 Lições que Aprendi Lendo Gary Vee</strong>';
+    el.authSubtitle.textContent = 'Leitura estratégica com execução diária guiada pelo autor Daniel Luzz';
     el.btnAuthSubmit.textContent = isLogin ? 'Entrar' : 'Criar conta';
     el.authPassword.setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
     el.authSwitchLabel.textContent = isLogin ? 'Primeira vez?' : 'Já tem conta?';
