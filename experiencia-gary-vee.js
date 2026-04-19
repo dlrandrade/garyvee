@@ -1871,6 +1871,7 @@
     registerServiceWorker();
     setupAuthEvents();
     setAuthMode('login');
+    setupMouseGlow();
 
     await getRuntimeConfig();
     initSupabase();
@@ -1879,6 +1880,36 @@
     if (!cloudEnabled) {
       showToast('Sem config de Supabase ativa. Defina env na Vercel.', 'error');
     }
+  }
+
+  function setupMouseGlow() {
+    const glowEl = document.getElementById('mouseGlow');
+    if (!glowEl) return;
+
+    let mouseX = -1000;
+    let mouseY = -1000;
+    let glowX = -1000;
+    let glowY = -1000;
+
+    document.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      glowEl.style.opacity = '1';
+    });
+
+    document.addEventListener('mouseleave', function() {
+      glowEl.style.opacity = '0';
+    });
+
+    function animate() {
+      glowX += (mouseX - glowX) * 0.08;
+      glowY += (mouseY - glowY) * 0.08;
+      glowEl.style.left = glowX + 'px';
+      glowEl.style.top = glowY + 'px';
+      requestAnimationFrame(animate);
+    }
+
+    animate();
   }
 
   init();

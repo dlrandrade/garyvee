@@ -394,12 +394,19 @@
       gap: var(--space-3);
     }
 
-    .auth-book-note {
-      margin: 0;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      line-height: 1.5;
-      text-align: center;
+    .mouse-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.08) 0%, rgba(255, 215, 0, 0.03) 40%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
     .field {
@@ -1561,14 +1568,14 @@
   <a href="#main-content" class="skip-link">Ir para o conteúdo principal</a>
 
   <div class="top-progress" id="topProgress"></div>
+  <div class="mouse-glow" id="mouseGlow"></div>
   <div class="toast-area" id="toastArea" aria-live="polite"></div>
 
   <div class="shell">
     <section id="authShell" class="auth-shell" aria-labelledby="authTitle">
       <div class="auth-headline">
-        <span class="eyebrow">Gary Vee Study OS</span>
-        <h1 id="authTitle">Entrar</h1>
-        <p id="authSubtitle">Acesse para sincronizar seu progresso.</p>
+        <h1 id="authTitle">30 Lições que Aprendi Lendo Gary Vee</h1>
+        <p id="authSubtitle">Leitura estratégica com execução diária guiada pelo autor <strong>Daniel Luzz</strong></p>
       </div>
 
       <form id="authForm" class="auth-form" novalidate>
@@ -1580,7 +1587,6 @@
           <label for="authPassword">Senha</label>
           <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="Mínimo 6 caracteres" required />
         </div>
-        <p class="auth-book-note">Leitura estratégica com execução diária — do livro <strong>30 Lições que Aprendi Lendo Gary Vee</strong> de Daniel Luzz</p>
         <button class="btn btn-primary" id="btnAuthSubmit" type="submit">Entrar</button>
       </form>
 
