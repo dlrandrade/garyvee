@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="theme-color" content="#F5F1E8" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="GaryVee Reader" />
   <meta name="mobile-web-app-capable" content="yes" />
   <title>Gary Vee Learning Experience</title>
@@ -17,7 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,500;1,9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -26,16 +26,17 @@
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --safe-left: env(safe-area-inset-left, 0px);
 
-      /* Typography — Outfit (display/UI/numeric) × EB Garamond (prose).
+      /* Design system — "Documento" (editorial).
+         Fraunces (display, slab variável) + Inter (UI/body).
          Roles below are the public API; swap family at the top, not per-call. */
-      --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-serif: 'Fraunces', 'Times New Roman', Georgia, serif;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
-      --font-display: var(--font-sans);
+      --font-display: var(--font-serif);
       --font-ui: var(--font-sans);
-      --font-numeric: var(--font-sans);
-      --font-body: var(--font-serif);
+      --font-numeric: var(--font-serif);
+      --font-body: var(--font-sans);
       --font-quote: var(--font-serif);
       --font-story-title: var(--font-display);
       --font-story-body: var(--font-body);
@@ -68,16 +69,16 @@
       --lh-ui: 1.25;
       --lh-body: 1.7;
 
-      /* DigitalHub design system — surfaces & text (dark theme) */
-      --rmm-bg: #000000;
-      --rmm-surface: #0a0a0a;
-      --rmm-surface-2: #1a1a1a;
-      --rmm-surface-3: #404040;
-      --rmm-border: #404040;
-      --rmm-text: #f8fafc;
-      --rmm-muted: #a3a3a3;
-      --rmm-yellow: #f9c102;
-      --rmm-yellow-intense: #d1a302;
+      /* Documento — paper palette (light theme) */
+      --rmm-bg: #F5F1E8;            /* paper cream */
+      --rmm-surface: #EBE6D9;       /* slightly darker cream, cards */
+      --rmm-surface-2: #E2DCCC;     /* pressed / raised surface */
+      --rmm-surface-3: #D4CDB9;     /* deeper paper */
+      --rmm-border: #D4CDB9;        /* hairline on paper */
+      --rmm-text: #1A1714;          /* ink */
+      --rmm-muted: #6B6258;         /* warm gray for meta */
+      --rmm-yellow: #7A1F1F;        /* oxblood accent (kept token name for compat) */
+      --rmm-yellow-intense: #5C1818; /* deeper oxblood */
       --rmm-orange: var(--rmm-yellow);
       --rmm-orange-intense: var(--rmm-yellow-intense);
 
@@ -87,11 +88,11 @@
       --radius-xl: 0.75rem;
       --radius-2xl: 1rem;
 
-      /* DigitalHub design system — shadows (Tailwind scale) */
-      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      /* Documento — softer shadows on paper (ink at low alpha, no hard blacks) */
+      --shadow-sm: 0 1px 2px 0 rgba(26, 23, 20, 0.06);
+      --shadow-md: 0 4px 10px -2px rgba(26, 23, 20, 0.08), 0 2px 4px -2px rgba(26, 23, 20, 0.06);
+      --shadow-lg: 0 12px 28px -8px rgba(26, 23, 20, 0.12), 0 4px 10px -4px rgba(26, 23, 20, 0.08);
+      --shadow-xl: 0 24px 48px -12px rgba(26, 23, 20, 0.16), 0 8px 16px -6px rgba(26, 23, 20, 0.1);
 
       /* Legacy semantic aliases (mapped onto the rmm tokens above) */
       --space-1: 8px;
@@ -110,17 +111,17 @@
 
       --bg: var(--rmm-bg);
       --bg-2: var(--rmm-surface);
-      --panel: color-mix(in srgb, var(--rmm-surface) 78%, transparent);
+      --panel: color-mix(in srgb, var(--rmm-surface) 92%, transparent);
       --panel-solid: var(--rmm-surface);
       --line: var(--rmm-border);
       --text: var(--rmm-text);
-      --text-dim: #e2e8f0;
+      --text-dim: #3A3430;
       --muted: var(--rmm-muted);
       --brand: var(--rmm-yellow);
       --brand-2: var(--rmm-yellow-intense);
       --accent: var(--rmm-yellow);
-      --ok: #22c55e;
-      --error: #ef4444;
+      --ok: #2F7A3D;
+      --error: #7A1F1F;
     }
 
     * {
@@ -137,8 +138,8 @@
       font-family: var(--font-ui);
       color: var(--text);
       background:
-        radial-gradient(900px 520px at 12% -10%, rgba(249, 193, 2, 0.22), transparent 62%),
-        radial-gradient(700px 460px at 90% 0%, rgba(64, 64, 64, 0.45), transparent 58%),
+        radial-gradient(900px 520px at 12% -10%, rgba(122, 31, 31, 0.06), transparent 62%),
+        radial-gradient(700px 460px at 90% 0%, rgba(26, 23, 20, 0.04), transparent 58%),
         linear-gradient(155deg, var(--bg) 0%, var(--bg-2) 55%, var(--bg) 100%);
       letter-spacing: var(--ls-normal);
     }
@@ -183,17 +184,17 @@
       inset: 0;
       pointer-events: none;
       z-index: 1;
-      opacity: 0.08;
-      background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0);
-      background-size: 3px 3px;
+      opacity: 0.05;
+      background-image: radial-gradient(circle at 1px 1px, #1A1714 1px, transparent 0);
+      background-size: 4px 4px;
     }
 
     .skip-link {
       position: absolute;
       left: -9999px;
       top: 10px;
-      background: #fff;
-      color: #000;
+      background: #1A1714;
+      color: #F5F1E8;
       padding: 8px 12px;
       border-radius: 10px;
       z-index: 2000;
@@ -1138,9 +1139,9 @@
       border-radius: 24px;
       border: 1px solid var(--line);
       background:
-        radial-gradient(360px 180px at 80% 10%, rgba(249, 193, 2, 0.22), transparent 72%),
-        radial-gradient(360px 190px at 15% 90%, rgba(30, 41, 59, 0.42), transparent 72%),
-        linear-gradient(150deg, #020617 0%, color-mix(in srgb, #020617 72%, #0f172a) 56%, #020617 100%);
+        radial-gradient(360px 180px at 80% 10%, rgba(122, 31, 31, 0.06), transparent 72%),
+        radial-gradient(360px 190px at 15% 90%, rgba(26, 23, 20, 0.04), transparent 72%),
+        linear-gradient(150deg, #F5F1E8 0%, color-mix(in srgb, #F5F1E8 72%, #EBE6D9) 56%, #F5F1E8 100%);
       box-shadow: var(--shadow-soft);
       aspect-ratio: 9 / 16;
       display: grid;
@@ -1166,7 +1167,7 @@
     .story-body,
     .story-footer {
       margin: 0;
-      color: #ffffff;
+      color: var(--text);
       line-height: normal;
     }
 

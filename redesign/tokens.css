@@ -10,15 +10,15 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
 
-  --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: 'Fraunces', 'Times New Roman', Georgia, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Role aliases — Outfit (display/UI/numeric) × EB Garamond (prose) */
-  --font-display: var(--font-sans);
+  /* Documento — Fraunces display + Inter UI/body */
+  --font-display: var(--font-serif);
   --font-ui: var(--font-sans);
-  --font-numeric: var(--font-sans);
-  --font-body: var(--font-serif);
+  --font-numeric: var(--font-serif);
+  --font-body: var(--font-sans);
   --font-quote: var(--font-serif);
 
   /* Type scale */
@@ -49,21 +49,21 @@
   --lh-ui: 1.25;
   --lh-body: 1.7;
 
-  --rmm-bg: #000000;
-  --rmm-surface: #0a0a0a;
-  --rmm-surface-2: #141414;
-  --rmm-surface-3: #1f1f1f;
-  --rmm-border: #262626;
-  --rmm-border-strong: #404040;
-  --rmm-text: #f8fafc;
-  --rmm-text-dim: #d4d4d4;
-  --rmm-muted: #a3a3a3;
-  --rmm-subtle: #737373;
-  --rmm-yellow: #f9c102;
-  --rmm-yellow-dim: #d1a302;
-  --rmm-ok: #22c55e;
-  --rmm-warn: #f59e0b;
-  --rmm-error: #ef4444;
+  --rmm-bg: #F5F1E8;
+  --rmm-surface: #EBE6D9;
+  --rmm-surface-2: #E2DCCC;
+  --rmm-surface-3: #D4CDB9;
+  --rmm-border: #D4CDB9;
+  --rmm-border-strong: #8A7B5C;
+  --rmm-text: #1A1714;
+  --rmm-text-dim: #3A3430;
+  --rmm-muted: #6B6258;
+  --rmm-subtle: #8A7B5C;
+  --rmm-yellow: #7A1F1F;
+  --rmm-yellow-dim: #5C1818;
+  --rmm-ok: #2F7A3D;
+  --rmm-warn: #B45309;
+  --rmm-error: #7A1F1F;
 
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
@@ -71,10 +71,10 @@
   --radius-xl: 1.5rem;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 10px 20px -6px rgba(0, 0, 0, 0.55), 0 4px 8px -4px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 24px 48px -12px rgba(0, 0, 0, 0.7);
-  --glow-yellow: 0 0 48px rgba(249, 193, 2, 0.25);
+  --shadow-sm: 0 1px 2px rgba(26, 23, 20, 0.06);
+  --shadow-md: 0 10px 20px -6px rgba(26, 23, 20, 0.12), 0 4px 8px -4px rgba(26, 23, 20, 0.08);
+  --shadow-lg: 0 24px 48px -12px rgba(26, 23, 20, 0.18);
+  --glow-yellow: 0 0 32px rgba(122, 31, 31, 0.18);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -115,7 +115,7 @@ a {
 
 ::selection {
   background: var(--rmm-yellow);
-  color: #000;
+  color: #F5F1E8;
 }
 
 /* ---------- typography primitives ---------- */
@@ -197,7 +197,7 @@ a {
 .btn-primary {
   background: var(--rmm-yellow);
   border-color: var(--rmm-yellow);
-  color: #000;
+  color: #F5F1E8;
   box-shadow: var(--glow-yellow);
 }
 
@@ -233,8 +233,8 @@ a {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(720px 420px at 12% -5%, rgba(249, 193, 2, 0.12), transparent 62%),
-    radial-gradient(560px 360px at 92% 8%, rgba(64, 64, 64, 0.35), transparent 60%);
+    radial-gradient(720px 420px at 12% -5%, rgba(122, 31, 31, 0.06), transparent 62%),
+    radial-gradient(560px 360px at 92% 8%, rgba(138, 123, 92, 0.18), transparent 60%);
 }
 
 .bottom-nav {
@@ -246,7 +246,7 @@ a {
   display: flex;
   gap: 4px;
   padding: 8px;
-  background: rgba(10, 10, 10, 0.85);
+  background: rgba(245, 241, 232, 0.88);
   border: 1px solid var(--rmm-border);
   border-radius: var(--radius-pill);
   backdrop-filter: blur(16px);
@@ -271,7 +271,7 @@ a {
 
 .bottom-nav a.active {
   background: var(--rmm-yellow);
-  color: #000;
+  color: #F5F1E8;
 }
 
 .bottom-nav svg {
@@ -292,7 +292,7 @@ a {
   gap: 8px;
   padding: 6px 12px;
   border-radius: var(--radius-pill);
-  background: rgba(10, 10, 10, 0.85);
+  background: rgba(245, 241, 232, 0.88);
   border: 1px solid var(--rmm-border);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
