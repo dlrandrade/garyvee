@@ -1113,6 +1113,44 @@
     const actionLH = Math.round(actionSize * 1.4);
     const footerLH = Math.round(footerSize * 1.4);
 
+    // Calculate total content height to determine bottom margin
+    let contentHeight = 0;
+    let yTemp = 0;
+    
+    // Title height
+    ctx.font = titleFont;
+    const titleLinesTemp = wrapText(ctx, titleText, blockW);
+    contentHeight += titleLinesTemp.length * titleLH;
+    
+    // Body height
+    if (bodyAText) {
+      contentHeight += gapTitle;
+      ctx.font = bodyFont;
+      const bodyLinesTemp = wrapText(ctx, bodyAText, blockW);
+      contentHeight += bodyLinesTemp.length * bodyLH;
+    }
+    
+    // Action height
+    if (actionText) {
+      contentHeight += gapBody;
+      ctx.font = actionBoldFont;
+      contentHeight += actionLH; // Label line
+      ctx.font = actionFont;
+      const actionLinesTemp = wrapText(ctx, actionText, blockW);
+      contentHeight += actionLinesTemp.length * actionLH;
+    }
+    
+    // Footer height
+    contentHeight += gapAction;
+    ctx.font = footerFont;
+    const footerLinesTemp = footerText ? wrapText(ctx, footerText, blockW) : [];
+    const creditLinesTemp = wrapText(ctx, creditText, blockW);
+    contentHeight += (footerLinesTemp.length + creditLinesTemp.length) * footerLH;
+    
+    // Use the same margin for top and bottom
+    const bottomMargin = topMargin;
+    
+    // Start position from top
     let y = topMargin;
 
     // — Title —
@@ -1170,6 +1208,10 @@
       ctx.fillText(line, x, y);
       y += footerLH;
     });
+
+    // Verify bottom margin equals top margin
+    const actualBottomMargin = height - y;
+    console.log('Top margin:', topMargin, 'Bottom margin:', actualBottomMargin, 'Content height:', contentHeight);
 
     const link = document.createElement('a');
     link.download = 'gary-vee-capitulo-' + chapterId + '-' + variant + '-' + format + '.png';
