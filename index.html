@@ -363,11 +363,24 @@
       font-size: clamp(1.8rem, 5vw, 2.4rem);
     }
 
+    .auth-headline h1 strong {
+      display: block;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+      text-transform: uppercase;
+    }
+
     .auth-headline p {
-      margin: 0;
+      margin: 8px 0 0;
       color: var(--text-dim);
       line-height: 1.5;
-      font-size: 0.92rem;
+      font-size: 1rem;
+    }
+
+    .auth-headline p strong {
+      color: var(--text-strong);
+      font-weight: 700;
     }
 
     .auth-switch {
@@ -395,25 +408,25 @@
     }
 
     .auth-book-note {
-      margin: 16px 0 0;
-      padding: 16px;
-      border-radius: 12px;
-      background: color-mix(in srgb, var(--brand) 18%, transparent);
-      border: 1px solid color-mix(in srgb, var(--brand) 45%, transparent);
-      font-size: 0.95rem;
+      margin: 12px 0 0;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--brand) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+      font-size: 0.85rem;
       font-weight: 600;
       color: var(--text-strong);
-      line-height: 1.6;
+      line-height: 1.5;
       text-align: center;
       box-shadow: var(--shadow-sm);
     }
 
     .auth-book-note strong {
-      display: block;
-      font-size: 1.05rem;
-      font-weight: 800;
+      display: inline;
+      font-size: 0.9rem;
+      font-weight: 700;
       color: var(--text-strong);
-      margin-top: 4px;
+      margin-top: 0;
     }
 
     .field {
@@ -1581,8 +1594,8 @@
     <section id="authShell" class="auth-shell" aria-labelledby="authTitle">
       <div class="auth-headline">
         <span class="eyebrow">Gary Vee Study OS</span>
-        <h1 id="authTitle">Entrar</h1>
-        <p id="authSubtitle">Acesse para sincronizar seu progresso.</p>
+        <h1 id="authTitle"><strong>30 Lições que Aprendi Lendo Gary Vee</strong></h1>
+        <p id="authSubtitle">Leitura estratégica com execução diária guiada pelo autor <strong>Daniel Luzz</strong>.</p>
       </div>
 
       <form id="authForm" class="auth-form" novalidate>
@@ -1594,8 +1607,8 @@
           <label for="authPassword">Senha</label>
           <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="Mínimo 6 caracteres" required />
         </div>
-        <p class="auth-book-note">Leitura estratégica com execução diária — do livro<strong>30 Lições que Aprendi Lendo Gary Vee de Daniel Luzz</strong></p>
         <button class="btn btn-primary" id="btnAuthSubmit" type="submit">Entrar</button>
+        <p class="auth-book-note">Fonte: <strong>Gary Vee: Jab, Jab, Jab, Right Hook</strong></p>
       </form>
 
       <p class="auth-switch">
