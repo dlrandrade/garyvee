@@ -800,8 +800,10 @@
     }
 
     .chip.active {
-      color: var(--bg);
-      background: linear-gradient(120deg, var(--brand), color-mix(in srgb, var(--brand) 56%, var(--brand-2)));
+      color: var(--text-strong);
+      background: #FDFBF3;
+      border-color: rgba(64,64,64,0.28);
+      box-shadow: 0 2px 8px -3px rgba(64,64,64,0.15);
     }
 
     .chapter-list {
@@ -831,11 +833,18 @@
       padding: 10px 12px;
       text-decoration: none;
       color: inherit;
+      transition: opacity 160ms ease, background 160ms ease;
+    }
+
+    .chapter-link.done-chapter {
+      opacity: 0.46;
     }
 
     .chapter-link.active {
-      border-color: color-mix(in srgb, var(--brand) 56%, transparent);
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand) 38%, transparent);
+      background: #FDFBF3;
+      border-color: rgba(64,64,64,0.3);
+      box-shadow: 0 4px 14px -6px rgba(64,64,64,0.18);
+      opacity: 1;
     }
 
     .link-topline {
@@ -1079,10 +1088,11 @@
       position: absolute;
       inset: 0;
       border-radius: 12px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(64, 64, 64, 0.18);
       padding: 12px;
       backface-visibility: hidden;
-      background: color-mix(in srgb, var(--panel-solid) 96%, transparent);
+      background: #FDFBF3;
+      box-shadow: 0 2px 10px -4px rgba(64,64,64,0.14);
       display: grid;
       align-content: space-between;
       gap: 8px;
@@ -1105,7 +1115,7 @@
     }
 
     .flash-label {
-      font-size: 0.72rem;
+      font-size: 0.54rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--muted);
@@ -1114,9 +1124,9 @@
 
     .flash-text {
       margin: 0;
-      color: var(--text-dim);
-      line-height: 1.55;
-      font-size: 0.95rem;
+      color: var(--text-strong);
+      line-height: 1.5;
+      font-size: 0.71rem;
     }
 
     .mini-note {
@@ -1222,11 +1232,11 @@
 
     .story-frame {
       border-radius: 24px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(64,64,64,0.2);
       background:
-        radial-gradient(360px 180px at 80% 10%, rgba(122, 31, 31, 0.06), transparent 72%),
-        radial-gradient(360px 190px at 15% 90%, rgba(26, 23, 20, 0.04), transparent 72%),
-        linear-gradient(150deg, #F5F1E8 0%, color-mix(in srgb, #F5F1E8 72%, #EBE6D9) 56%, #F5F1E8 100%);
+        radial-gradient(360px 180px at 80% 10%, rgba(255,203,3,0.12), transparent 72%),
+        radial-gradient(360px 190px at 15% 90%, rgba(64,64,64,0.05), transparent 72%),
+        linear-gradient(150deg, #FDFBF3 0%, #F5EED8 56%, #FDFBF3 100%);
       box-shadow: var(--shadow-soft);
       aspect-ratio: 9 / 16;
       display: grid;
@@ -1257,30 +1267,47 @@
     }
 
     .story-main {
-      font-family: var(--font-story-title);
-      font-size: clamp(1.45rem, 2.4vw, 2.1rem);
+      font-family: var(--font-ui);
+      font-size: clamp(1.1rem, 1.8vw, 1.6rem);
       text-transform: uppercase;
-      font-weight: 800;
-      letter-spacing: -1px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: #1A1A1A;
     }
 
-    .story-body,
-    .story-footer {
-      font-family: var(--font-story-body);
-      font-size: clamp(0.82rem, 1.2vw, 1.03rem);
-      color: color-mix(in srgb, #ffffff 92%, transparent);
+    .story-body {
+      font-family: var(--font-ui);
+      font-size: clamp(0.72rem, 1.1vw, 0.9rem);
+      color: #404040;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+
+    .story-action {
+      font-family: var(--font-ui);
+      font-size: clamp(0.64rem, 0.95vw, 0.78rem);
+      color: #1A1A1A;
+      line-height: 1.45;
+    }
+
+    .story-action strong {
+      font-weight: 700;
     }
 
     .story-footer {
-      font-size: clamp(0.76rem, 0.96vw, 0.9rem);
-      color: color-mix(in srgb, #ffffff 88%, transparent);
+      font-family: var(--font-ui);
+      font-size: clamp(0.6rem, 0.8vw, 0.68rem);
+      color: #6A6A6A;
       letter-spacing: 0.02em;
+      font-weight: 400;
     }
 
     .story-footer-book {
-      margin-top: -18px;
-      font-size: clamp(0.76rem, 0.96vw, 0.9rem);
-      opacity: 0.9;
+      margin-top: -14px;
+      font-size: clamp(0.6rem, 0.8vw, 0.68rem);
+      color: #6A6A6A;
+      opacity: 0.85;
     }
 
     .share-tools {
@@ -1294,6 +1321,44 @@
       gap: 10px;
       flex-wrap: wrap;
       margin-top: 4px;
+    }
+
+    .social-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .social-x {
+      background: #1A1A1A;
+      color: #fff;
+      border-color: #1A1A1A;
+    }
+
+    .social-x:hover {
+      background: #333;
+      border-color: #333;
+    }
+
+    .social-fb {
+      background: #1877F2;
+      color: #fff;
+      border-color: #1877F2;
+    }
+
+    .social-fb:hover {
+      background: #0B63D9;
+      border-color: #0B63D9;
     }
 
     .progress-export {
@@ -1504,7 +1569,7 @@
       <section class="topbar">
         <div class="brand">
           <strong>GARYVEE READER</strong>
-          <span>Leitura estratégica com execução diária</span>
+          <span>Leitura estratégica com execução diária — do livro <em>30 Lições que Aprendi Lendo Gary Vee</em> de Daniel Luzz</span>
         </div>
 
         <div class="account-wrap">
@@ -1690,7 +1755,7 @@
           <div class="story-inner">
             <p class="story-main" id="storyMain"></p>
             <p class="story-body" id="storyBodyA"></p>
-            <p class="story-body" id="storyBodyB"></p>
+            <p class="story-action" id="storyBodyB"></p>
             <p class="story-footer" id="storyFooter"></p>
             <p class="story-footer story-footer-book" id="storyFooterBook"></p>
           </div>
@@ -1729,8 +1794,8 @@
             </div>
 
             <div class="field">
-              <label for="shareBodyInputB">Parágrafo 3 (EB Garamond)</label>
-              <textarea id="shareBodyInputB" placeholder="Aplicação prática"></textarea>
+              <label for="shareBodyInputB">Ação de hoje</label>
+              <textarea id="shareBodyInputB" placeholder="Ação prática do capítulo"></textarea>
             </div>
 
             <div class="field">
@@ -1741,7 +1806,22 @@
             <div class="export-row">
               <button class="btn btn-primary" id="btnDownloadPost" type="button">Baixar PNG</button>
               <button class="btn" id="btnCopyCaption" type="button">Copiar texto</button>
-              <button class="btn" id="btnDailyShare" type="button">Usar capítulo do dia</button>
+              <button class="btn" id="btnDailyShare" type="button">Compartilhar capítulo do dia</button>
+            </div>
+
+            <div class="social-row" aria-label="Compartilhar nas redes">
+              <button class="btn social-btn social-x" id="btnShareX" type="button" title="Compartilhar no X (Twitter)">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.294 6.8 14.544 0h-1.24L8.74 5.89 4.982 0H.8l5.518 8.04L.8 15.2h1.24l4.82-5.6 3.854 5.6H14L9.294 6.8zm-1.706 1.98-.558-.8L2.48.96H4.4l3.582 5.12.558.8 4.66 6.664h-1.92L7.588 8.78z"/></svg>
+                X
+              </button>
+              <button class="btn social-btn social-fb" id="btnShareFacebook" type="button" title="Compartilhar no Facebook">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M16 8.05C16 3.601 12.418 0 8 0S0 3.601 0 8.05c0 4.017 2.926 7.347 6.75 7.95V10.38H4.719V8.05H6.75V6.276c0-2.017 1.195-3.132 3.023-3.132.875 0 1.79.157 1.79.157v1.98h-1.008c-.994 0-1.304.62-1.304 1.257V8.05h2.219l-.354 2.329H9.25V16c3.824-.603 6.75-3.933 6.75-7.95z"/></svg>
+                Facebook
+              </button>
+              <button class="btn social-btn" id="btnShareCopy" type="button" title="Copiar legenda">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="5" width="10" height="10" rx="2"/><path d="M3 11H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1"/></svg>
+                Copiar
+              </button>
             </div>
           </div>
         </div>
