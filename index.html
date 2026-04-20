@@ -149,6 +149,16 @@
         radial-gradient(700px 460px at 90% 0%, rgba(245, 184, 0, 0.55), transparent 58%),
         linear-gradient(155deg, var(--bg-2) 0%, var(--bg) 55%, var(--bg-3) 100%);
       letter-spacing: var(--ls-normal);
+      overflow-x: hidden;
+    }
+
+    #gradientLayer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.15;
+      transition: transform 0.3s ease-out;
     }
 
     /* Type-role normalizers: keep a single source of truth per role.
@@ -1608,7 +1618,6 @@
           <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="6" placeholder="Mínimo 6 caracteres" required />
         </div>
         <button class="btn btn-primary" id="btnAuthSubmit" type="submit">Entrar</button>
-        <p class="auth-book-note">Fonte: <strong>Gary Vee: Jab, Jab, Jab, Right Hook</strong></p>
       </form>
 
       <p class="auth-switch">
@@ -1887,8 +1896,47 @@
     </p>
   </footer>
 
+  <div id="gradientLayer"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./experiencia-gary-vee.data.js"></script>
   <script src="./experiencia-gary-vee.js"></script>
+  
+  <script>
+    // Animação sutil do gradiente seguindo o mouse
+    (function() {
+      const gradientLayer = document.getElementById('gradientLayer');
+      if (!gradientLayer) return;
+      
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let currentX = mouseX;
+      let currentY = mouseY;
+      
+      document.addEventListener('mousemove', function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+      
+      function animate() {
+        // Interpolação suave (lerp) para movimento fluido
+        currentX += (mouseX - currentX) * 0.05;
+        currentY += (mouseY - currentY) * 0.05;
+        
+        // Calcula o deslocamento baseado na posição do mouse
+        const moveX = (currentX / window.innerWidth - 0.5) * 100;
+        const moveY = (currentY / window.innerHeight - 0.5) * 100;
+        
+        gradientLayer.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        gradientLayer.style.background = `
+          radial-gradient(600px 400px at ${currentX}px ${currentY}px, rgba(255, 230, 100, 0.4), transparent 70%)
+        `;
+        
+        requestAnimationFrame(animate);
+      }
+      
+      animate();
+    })();
+  </script>
 </body>
 </html>
